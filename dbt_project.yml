@@ -1,0 +1,12 @@
+name: 'upstream_prod'
+version: '1.0.0'
+config-version: 2
+
+require-dbt-version: [">=1.1.0", "<2.0.0"]
+
+macro-paths: ["macros"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"

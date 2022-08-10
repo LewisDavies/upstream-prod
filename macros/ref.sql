@@ -27,8 +27,12 @@
 
     {# Defer to prod for upstream models if they haven't been selected for the current run #}
     {% if current_model in selected_models and parent_model not in selected_models %}
-        {% set parent_database = parent_ref.database | replace(target.database, prod_database) %}
+        {# Account for warehouse-specific terms: https://docs.getdbt.com/reference/dbt-jinja-functions/target #}
+        {% set target_database = target.database or target.dbname or target.project %}
+
+        {% set parent_database = parent_ref.database | replace(target_database, prod_database) %}
         {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
+        
         {% set parent_ref = adapter.get_relation(
                 database=parent_database,
                 schema=parent_schema,

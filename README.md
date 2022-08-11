@@ -1,13 +1,13 @@
-# What is upstream_prod?
+# What is upstream-prod?
 
-`upstream_prod` is a dbt package for easily using production data in a development environment. It's like an alternative to the [defer flag](https://docs.getdbt.com/reference/node-selection/defer) - only without the need to find and download a production manifest.
+`upstream-prod` is a dbt package for easily using production data in a development environment. It's like an alternative to the [defer flag](https://docs.getdbt.com/reference/node-selection/defer) - only without the need to find and download a production manifest.
 
 It is inspired by (but unrelated to) [similar work by Monzo](https://monzo.com/blog/2021/10/14/an-introduction-to-monzos-data-stack).
 
 ## How it works
 When developing locally, I would often get errors because my dev database had outdated or missing data. Rebuilding the models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.
 
-`upstream_prod` fixes this by overriding the `{{ ref() }}` macro, redirecting `ref`s in selected models to their equivalent table in production (unless the parent model was also selected).
+`upstream-prod` fixes this by overriding the `{{ ref() }}` macro, redirecting `ref`s in selected models to their equivalent table in production (unless the parent model was also selected).
 
 For example, imagine a simple DAG like:
 ```
@@ -49,4 +49,4 @@ vars:
 ```
 
 ## Compatibility
-`upstream_prod` has been designed and tested on Snowflake only. It _should_ work with other officially supported adapted but I can't be sure. If it doesn't, PRs are welcome!
+`upstream-prod` has been designed and tested on Snowflake only. It _should_ work with other officially supported adapted but I can't be sure. If it doesn't, PRs are welcome!

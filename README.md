@@ -31,22 +31,37 @@ If I run `dbt build -s model_2+`, the following happens:
 In short, your selected models are available in your `dev` environment with all that lovely `prod` quality!
 
 ## Setup
-After installing the package, setup is a two-step process:
-1. Replace any instances of `{{ ref() }}` in your project with `{{ upstream_prod.ref() }}`
-1. Specify your production database and schema in `dbt_project.yml`
+After installing the package, first add the following variables to `dbt_project.yml`:
 
 ```yml
 # Example dbt_project.yml
 vars:
-  # These should match the prod target from profiles.yml
+  # Required - these should match the prod target from profiles.yml
   upstream_prod_database: <prod_db>
   upstream_prod_schema: <prod_schema>
-  # Optional variables
+  # Optional
   upstream_prod_enabled: True  # Set as False to disable the package
   upstream_prod_disabled_targets:  # List of targets where upstream_prod should be disabled
     - ci
     - prod
 ```
+
+Next, you need to tell dbt to use this package's version of `{{ ref() }}` instead of the builtin macro. The recommended approach is to create a thin wrapper around `upstream-prod`. In your `macros` directory, create a file called `ref.sql` with the following contents:
+```python
+{% macro ref(
+    parent_model, 
+    current_model=this.name, 
+    prod_database=var("upstream_prod_database"), 
+    prod_schema=var("upstream_prod_schema"),
+    enabled=var("upstream_prod_enabled", True)
+) %}
+
+  {% do return(upstream_prod.ref(parent_model, current_model, prod_database, prod_schema, enabled)) %}
+
+{% endmacro %}
+```
+
+Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`
 
 ## Compatibility
 `upstream-prod` has been designed and tested on Snowflake only. It _should_ work with other officially supported adapted but I can't be sure. If it doesn't, PRs are welcome!

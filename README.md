@@ -51,8 +51,8 @@ Next, you need to tell dbt to use this package's version of `{{ ref() }}` instea
 {% macro ref(
     parent_model, 
     current_model=this.name, 
-    prod_database=var("upstream_prod_database"), 
-    prod_schema=var("upstream_prod_schema"),
+    prod_database=var("upstream_prod_database", None), 
+    prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True)
 ) %}
 

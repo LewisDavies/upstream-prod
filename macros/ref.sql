@@ -3,17 +3,18 @@
     current_model=this.name, 
     prod_database=var("upstream_prod_database", None), 
     prod_schema=var("upstream_prod_schema", None),
-    enabled=var("upstream_prod_enabled", True)
+    enabled=var("upstream_prod_enabled", True),
+    fallback=var("upstream_prod_fallback", False)
 ) %}
-    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, current_model, prod_database, prod_schema, enabled)) }}
+    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, current_model, prod_database, prod_schema, enabled, fallback)) }}
 {% endmacro %}
 
-{% macro default__ref(parent_model, current_model, prod_database, prod_schema, enabled) %}
+{% macro default__ref(parent_model, current_model, prod_database, prod_schema, enabled, fallback) %}
 
     {% set parent_ref = builtins.ref(parent_model) %}
 
     {# Return builtin ref when disabled or during prod runs #}
-    {% if target.name in var("upstream_prod_disabled_targets", []) or not enabled %}
+    {% if not execute or target.name in var("upstream_prod_disabled_targets", []) or not enabled %}
         {{ return(parent_ref) }}
     {% endif %}
 
@@ -38,15 +39,24 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         {% endif %}
     {% endfor %}
 
-    {# Defer to prod for upstream models not selected for the current run #}
-    {% if current_model in selected_models and parent_model not in selected_models %}
-        {% set parent_ref = adapter.get_relation(
-                database=prod_database or parent_ref.database,
-                schema=prod_schema or parent_ref.schema,
-                identifier=parent_ref.identifier
-        ) %}
+    {# Defer to prod for upstream models not selected for this run #}
+    {% if current_model in selected_models %}
+        {% if parent_model in selected_models %}
+            {{ return(parent_ref) }}
+        {% else %}
+            {% set prod_ref = adapter.get_relation(
+                    database=prod_database or parent_ref.database,
+                    schema=prod_schema or parent_ref.schema,
+                    identifier=parent_model
+            ) %}
+
+            {% if prod_ref is none and fallback %}
+                {{ log("[" ~ current_model ~ "] " ~ parent_model ~ " not found in prod, falling back to default target", info=True) }}
+                {{ return(parent_ref) }}
+            {% else %}
+                {{ return(prod_ref) }}
+            {% endif %}
+        {% endif %}
     {% endif %}
-    
-    {{ return(parent_ref) }}
 
 {% endmacro %}

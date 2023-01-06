@@ -13,9 +13,19 @@
 
     {% set parent_ref = builtins.ref(parent_model) %}
 
-    {# Return builtin ref when disabled or during prod runs #}
+    {# Return builtin ref during parsing or when disabled #}
     {% if not execute or target.name in var("upstream_prod_disabled_targets", []) or not enabled %}
         {{ return(parent_ref) }}
+    {% endif %}
+
+    {# Return builtin ref for tests #}
+    {% if execute %}
+        {% set nodes = graph.nodes.values() %}
+        {% set current_node = (nodes | selectattr("alias", "equalto", current_model) | list).pop() %}
+        {{ log(current_node.resource_type == 'test', info=True) }}
+        {% if current_node.resource_type == 'test' %}
+            {{ return(parent_ref) }}
+        {% endif %}
     {% endif %}
 
     {# Raise error if neither the upstream database or schema are set #}
@@ -33,9 +43,9 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
     {# List models selected for current run #}
     {% set selected_models = [] %}
-    {% for model in selected_resources %}
-        {% if model.startswith("model.") or model.startswith("snapshot.") %}
-            {% do selected_models.append(model.split(".")[-1]) %}
+    {% for res in selected_resources %}
+        {% if res.startswith("model.") or res.startswith("snapshot.") %}
+            {% do selected_models.append(res.split(".")[-1]) %}
         {% endif %}
     {% endfor %}
 

@@ -54,7 +54,12 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         {% if parent_model in selected_models %}
             {{ return(parent_ref) }}
         {% else %}
-            {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
+            {# Use parent ref schema when upstream schema is not set #}
+            {% if prod_schema is none %}
+                {% set parent_schema = parent_ref.schema %}
+            {% else %}
+                {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
+            {% endif %}
             {% set prod_ref = adapter.get_relation(
                     database=prod_database or parent_ref.database,
                     schema=parent_schema,

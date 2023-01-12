@@ -30,6 +30,11 @@ If I run `dbt build -s model_2+`, the following happens:
 
 In short, your selected models are available in your `dev` environment with all that lovely `prod` quality!
 
+### Optional: default target fallback
+If desired, the package can return a `dev` model when the `prod` version can't be found. This is useful when adding several new models at once.
+
+Let's assume only `model_1` is in `prod` and I want to create `model_2` and `model_3`. First I create `model_2` in `dev` with `dbt run -s model_2`, then start working on `model_3`. By default, `dbt run -s model_3` would fail because `model_2` doesn't exist in `prod`. With fallback mode enabled, the package would use the `dev` model and the command would be successful.
+
 ## Setup
 
 ### 1. Required variables
@@ -43,8 +48,8 @@ Set either of `upstream_prod_schema` or `upstream_prod_database` to tell the pac
 
 ### 2. Optional variables
 - `upstream_prod_enabled`: Disables the package when False. Defaults to True.
-- `upstream_prod_fallback`: When True, models will use the default target when a prod version doesn't exist (useful when changing multiple tables at once). Defaults to False.
 - `upstream_prod_disabled_targets`: List of targets where the package should be disabled.
+- `upstream_prod_fallback`: Whether to fall back to the default target when a model can't be found in prod. Defaults to False.
 
 **Example**
 

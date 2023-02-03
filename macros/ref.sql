@@ -22,7 +22,6 @@
     {% if execute %}
         {% set nodes = graph.nodes.values() %}
         {% set current_node = (nodes | selectattr("alias", "equalto", current_model) | list).pop() %}
-        {{ log(current_node.resource_type == 'test', info=True) }}
         {% if current_node.resource_type == 'test' %}
             {{ return(parent_ref) }}
         {% endif %}

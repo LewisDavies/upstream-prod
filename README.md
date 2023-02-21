@@ -59,7 +59,7 @@ I use Snowflake and each developer has a separate database with identically-name
 # dbt_project.yml
 vars:
   upstream_prod_database: <prod_db>
-  upstream_prod_fallack: True
+  upstream_prod_fallback: True
   upstream_prod_disabled_targets:
     - ci
     - prod

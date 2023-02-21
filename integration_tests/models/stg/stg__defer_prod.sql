@@ -1,0 +1,1 @@
+select 'prod' as env

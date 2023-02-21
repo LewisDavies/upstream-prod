@@ -39,12 +39,18 @@ Let's assume only `model_1` is in `prod` and I want to create `model_2` and `mod
 
 ### 1. Required variables
 
-After installing the package you'll need to add some variables to `dbt_project.yml`.
+After installing the package, you need to add some variables to `dbt_project.yml` so it knows where to find production data. This varies depending on how your project is configured.
 
-Set either of `upstream_prod_schema` or `upstream_prod_database` to tell the package where to find production data. Open `profiles.yml` and set the relevant variables for your setup:
+| Setup                                                                                                     | Prod examples                               | Dev examples                                            |
+|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|---------------------------------------------------------|
+| Custom schemas ([examples](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))    | `db.prod.table`</br>`db.prod_stg.stg_table` | `db.dbt_<name>.table`</br>`db.dbt_<name>_stg.stg_table` |
+| Custom env schemas ([example](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema)) | `db.prod.table`</br>`db.stg.stg_table`      | `db.dbt_<name>.table`</br>`db.dbt_<name>.stg_table`     |
+| Dev databases                                                                                             | `db.prod.table`</br>`db.prod_stg.stg_table` | `dev_db.prod.table`</br>`dev_db.prod_stg.stg_table`     |
 
-- If dev and prod are in **different schemas in the same database**, set `upstream_prod_schema` to the `schema` value of your prod target.
-- If dev and prod are in **different logical databases**, set `upstream_prod_database` to the `database` value of your prod target.
+Open `profiles.yml` and find the relevant details for your setup:
+- **Custom schemas**: set `upstream_prod_schema` to the `schema` value of your `prod` target.
+- **Custom env schemas**: same as above, but also set the variable `upstream_prod_env_schemas` to `True`.
+- **Dev databases**: set `upstream_prod_database` to the `database` value of your `prod` target.
 
 ### 2. Optional variables
 - `upstream_prod_enabled`: Disables the package when False. Defaults to True.
@@ -58,7 +64,7 @@ I use Snowflake and each developer has a separate database with identically-name
 ```yml
 # dbt_project.yml
 vars:
-  upstream_prod_database: <prod_db>
+  upstream_prod_database: <prod_db> # replace with your prod db
   upstream_prod_fallback: True
   upstream_prod_disabled_targets:
     - ci
@@ -74,15 +80,16 @@ Next, you need to tell dbt to use this package's version of `{{ ref() }}` instea
     prod_database=var("upstream_prod_database", None), 
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
-    fallback=var("upstream_prod_fallback", False)
+    fallback=var("upstream_prod_fallback", False),
+    env_schemas=var("upstream_prod_env_schemas", False)
 ) %}
 
-  {% do return(upstream_prod.ref(parent_model, current_model, prod_database, prod_schema, enabled, fallback)) %}
+  {% do return(upstream_prod.ref(parent_model, current_model, prod_database, prod_schema, enabled, fallback, env_schemas)) %}
 
 {% endmacro %}
 ```
 
-Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`
+Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`.
 
 ## Compatibility
 `upstream-prod` has been designed and tested on Snowflake only. It _should_ work with other officially supported adapters but I can't be sure. If it doesn't, PRs are welcome!

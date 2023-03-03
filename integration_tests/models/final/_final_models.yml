@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: defer_prod
+    columns:
+      - name: env
+        tests:
+          - accepted_values:
+              values: ['prod']
+
+  - name: dev_fallback
+    columns:
+      - name: env
+        tests:
+          - accepted_values:
+              values: ['dev']

@@ -1,1 +1,1 @@
-select env from {{ ref('stg__defer_prod') }}
+select id, env from {{ ref('stg__defer_prod') }}

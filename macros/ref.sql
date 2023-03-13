@@ -71,9 +71,6 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         -- Return dev relation for explicitly selected models
         {% if parent_model == tested_model %}
             {{ return(parent_ref) }}
-        -- Add other refs to selected for processing
-        {% else %}
-            {% do selected.append(parent_model) %}
         {% endif %}
     {% endfor %}
 

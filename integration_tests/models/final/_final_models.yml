@@ -3,6 +3,11 @@ version: 2
 models:
   - name: defer_prod
     columns:
+      - name: id
+        tests:
+          - relationships:
+              to: ref('stg__defer_prod')
+              field: id
       - name: env
         tests:
           - accepted_values:
@@ -10,6 +15,11 @@ models:
 
   - name: dev_fallback
     columns:
+      - name: id
+        tests:
+          - relationships:
+              to: ref('stg__dev_fallback')
+              field: id
       - name: env
         tests:
           - accepted_values:

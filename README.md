@@ -7,7 +7,7 @@ It is inspired by (but unrelated to) [similar work by Monzo](https://monzo.com/b
 ## How it works
 When developing locally, I would often get errors because my dev database had outdated or missing data. Rebuilding the models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.
 
-`upstream-prod` fixes this by overriding the `{{ ref() }}` macro, redirecting `ref`s in selected models to their equivalent table in production (unless the parent model was also selected).
+`upstream-prod` fixes this by overriding the `{{ ref() }}` macro, redirecting `ref`s in selected models & tests to their equivalent relations in your production environment.
 
 For example, imagine a simple DAG like:
 ```
@@ -25,8 +25,10 @@ jaffle_shop:
 ```
 If I run `dbt build -s model_2+`, the following happens:
 - `model_2` is built in `dev` with data from the `prod` version of `model_1`.
-- `model_3` is also built in my `dev` but it refers to the `dev` version of `model_2`.
+- `model_3` is also built in `dev` but it refers to the `dev` version of `model_2`.
 - Tests are run against the `dev` versions of `model_2` and `model_3`.
+
+> For tests that refer to multipe tables, such as relationship tests, the `prod` version of the comparison model will be used when available.
 
 In short, your selected models are available in your `dev` environment with all that lovely `prod` quality!
 
@@ -92,4 +94,4 @@ Next, you need to tell dbt to use this package's version of `{{ ref() }}` instea
 Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`.
 
 ## Compatibility
-`upstream-prod` has been designed and tested on Snowflake only. It _should_ work with other officially supported adapters but I can't be sure. If it doesn't, PRs are welcome!
+`upstream-prod` has been designed and tested on Snowflake. User reports indicate that it works perfectly with BigQuery and Redshift, and it should also work with most community-supported adapters - PRs are welcome if it doesn't!

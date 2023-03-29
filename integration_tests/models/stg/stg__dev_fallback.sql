@@ -1,1 +1,1 @@
-select 'dev' as env
+select 1 as id, 'dev' as env

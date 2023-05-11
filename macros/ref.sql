@@ -84,7 +84,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
             {% set parent_node = graph.nodes.values() 
                 | selectattr("name", "equalto", parent_model)
                 | first %}
-            {% set parent_schema = parent_node.config.schema or prod_schema %}
+            {% set parent_schema = prod_schema ~ "_" ~ parent_node.config.schema %}
         -- No prod_schema value means a one-DB-per-developer setup, so assume schema names are consistent across
         -- environments and use the schema name from the default parent ref
         {% elif prod_schema is none %}

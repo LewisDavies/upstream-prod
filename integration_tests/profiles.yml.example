@@ -7,7 +7,7 @@ upstream_prod:
       password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
       role: "{{ env_var('SNOWFLAKE_ROLE') }}"
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      database: upstream_prod__prod_db
+      database: upstream__prod_db
       schema: dev
       threads: 4
     prod:
@@ -17,7 +17,7 @@ upstream_prod:
       password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
       role: "{{ env_var('SNOWFLAKE_ROLE') }}"
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      database: upstream_prod__prod_db
+      database: upstream__prod_db
       schema: prod
       threads: 4
     dev_db:
@@ -27,7 +27,7 @@ upstream_prod:
       password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
       role: "{{ env_var('SNOWFLAKE_ROLE') }}"
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      database: upstream_prod__dev_db
+      database: upstream__dev_db
       schema: prod
       threads: 4
     prod_db:
@@ -37,6 +37,6 @@ upstream_prod:
       password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
       role: "{{ env_var('SNOWFLAKE_ROLE') }}"
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      database: upstream_prod__prod_db
+      database: upstream__prod_db
       schema: prod
       threads: 4

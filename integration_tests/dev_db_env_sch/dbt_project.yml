@@ -20,6 +20,5 @@ models:
 
 vars:
   upstream_prod_database: upstream__prod_db
-  upstream_prod_schema: prod
   upstream_prod_fallback: true
   upstream_prod_env_schemas: true

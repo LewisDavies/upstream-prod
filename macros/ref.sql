@@ -14,12 +14,20 @@
     {% set parent_ref = builtins.ref(parent_model) %}
 
     -- Return builtin ref during parsing or when disabled
-    {% if not execute or target.name in var("upstream_prod_disabled_targets", []) or not enabled %}
+    {% 
+        if execute == false
+        or enabled == false
+        or target.name in var("upstream_prod_disabled_targets", []) 
+    %}
         {{ return(parent_ref) }}
     {% endif %}
 
     -- Raise error if at least one required variable is not set
-    {% if prod_database is none and prod_schema is none and not env_schemas %}
+    {% 
+        if prod_database is none 
+        and prod_schema is none 
+        and env_schemas == false
+    %}
         {% set error_msg -%}
 upstream_prod is enabled but at least one required variable is missing.
 Please set at least one of the following variables to correctly configure the package:
@@ -54,6 +62,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
     As my_model was explicitly selected by the user, the dev relation is used as the base and is
     compared to the prod version of my_stg_model.
     /*******************/
+
     -- Find models & snapshots selected for current run
     {% set selected = [] %}
     {% set selected_tests = [] %}
@@ -77,14 +86,15 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
     -- Use dev relations for models being built during the current run
     {% if parent_model in selected %}
         {{ return(parent_ref) }}
-    -- Defer to prod for non-selected upstream models
+    -- Try deferring to prod for non-selected upstream models
     {% else %}
         -- When using env schemas, use the graph to find the schema name that would be used in production environments
-        {% if env_schemas %}
+        {% if env_schemas == true %}
             {% set parent_node = graph.nodes.values() 
                 | selectattr("name", "equalto", parent_model)
                 | first %}
-            {% set parent_schema = prod_schema ~ "_" ~ parent_node.config.schema %}
+            {% set custom_schema_name = parent_node.config.schema %}
+            {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) %}
         -- No prod_schema value means a one-DB-per-developer setup, so assume schema names are consistent across
         -- environments and use the schema name from the default parent ref
         {% elif prod_schema is none %}
@@ -95,18 +105,31 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
             {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
         {% endif %}
 
-        {% set prod_ref = adapter.get_relation(
-                database=prod_database or parent_ref.database,
-                schema=parent_schema,
-                identifier=parent_model
-        ) %}
-        -- If prod relation doesn't exist and fallback is enabled, return a ref to dev relation instead.
-        -- The dev relation may also not exist if the parent model hasn't been selected on the current run.
-        {% if prod_ref is none and fallback %}
+        -- Build final ref and check that it exists
+        {% set parent_database = prod_database or parent_ref.database %}
+        {% set return_ref = adapter.get_relation(parent_database, parent_schema, parent_model) %}
+
+        -- If prod relation doesn't exist and fallback is enabled, try the dev relation instead.
+        {% if return_ref is none and fallback == true %}
             {{ log("[" ~ current_model ~ "] " ~ parent_model ~ " not found in prod, falling back to default target", info=True) }}
-            {{ return(parent_ref) }}
-        {% else %}
-            {{ return(prod_ref) }}
+            {% set return_ref = load_relation(parent_ref) %}
         {% endif %}
+
+        -- Return final ref, or raise error if relation isn't found
+        {% if return_ref is not none %}
+            {{ return(return_ref) }}
+        {% else %}
+            {% set error_msg -%}
+[{{ current_model }}] upstream_prod couldn't find the specified model:
+
+DATABASE: {{ parent_database }}
+SCHEMA:   {{ parent_schema }}
+RELATION: {{ parent_model }}
+
+Check your variable settings in the README or create a GitHub issue for more help.
+            {%- endset %}
+            {% do exceptions.raise_compiler_error(error_msg) %}
+        {% endif %}
+
     {% endif %}
 {% endmacro %}

@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: defer_prod
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__defer_prod']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['defer_prod']
+
+
+  - name: dev_fallback
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__dev_fallback']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['dev_fallback']

@@ -47,16 +47,16 @@ Add the relevant variables to `dbt_project.yml`. This varies depending on how yo
 Open `profiles.yml` and find the relevant details for your setup:
 - **Dev databases**: set `upstream_prod_database` to the `database` value of your `prod` target.
 - **Custom schemas**: set `upstream_prod_schema` to the `schema` value of your `prod` target.
-- **Env schemas**: same as above, but also set the variable `upstream_prod_env_schemas` to `True`.
+- **Env schemas**: set `upstream_prod_env_schemas` to `True`.
 
-When using env schemas, you'll need to add an `is_upstream_prod` parameter to your `generate_schema_name` macro: 
+When using env schemas, you also need to add the `is_upstream_prod` parameter to your `generate_schema_name` macro:
 ```sql
--- New parameter should default to False
+-- is_upstream_prod should default to False
 {% macro generate_schema_name(custom_schema_name, node, is_upstream_prod=False) -%}
 
     {%- set default_schema = target.schema -%}
-    -- Add the parameter to the clause that generates your prod schema names
-    -- Make sure to put the or condition in brackets
+    -- Add the parameter to the clause that generates your prod schema names, making sure to 
+    -- enclose the *or* condition in brackets 
     {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
 
         {{ custom_schema_name | trim }}

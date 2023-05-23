@@ -1,19 +1,19 @@
 # What is upstream-prod?
 
-`upstream-prod` is a dbt package for easily using production data in a development environment. It's like an alternative to the [defer flag](https://docs.getdbt.com/reference/node-selection/defer) - only without the need to find and download a production manifest.
+`upstream-prod` is a dbt package for easily using production data in a development environment. It's an alternative to the [defer flag](https://docs.getdbt.com/reference/node-selection/defer) - only without the need to find and download a production manifest.
 
 It is inspired by (but unrelated to) [similar work by Monzo](https://monzo.com/blog/2021/10/14/an-introduction-to-monzos-data-stack).
 
 ## How it works
-When developing locally, I would often get errors because my dev database had outdated or missing data. Rebuilding the models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.
+I would often get errors when developing locally because my dev database had outdated or missing data. Rebuilding models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.
 
 `upstream-prod` fixes this by overriding the `{{ ref() }}` macro, redirecting `ref`s in selected models & tests to their equivalent relations in your production environment.
 
-For example, imagine a simple DAG like:
+For example, with a simple DAG:
 ```
 model_1 -> model_2 -> model_3
 ```
-With a `profiles.yml` similar to:
+And `profiles.yml`:
 ```yml
 jaffle_shop:
   target: dev
@@ -23,36 +23,54 @@ jaffle_shop:
     prod:
       ...
 ```
-If I run `dbt build -s model_2+`, the following happens:
-- `model_2` is built in `dev` with data from the `prod` version of `model_1`.
-- `model_3` is also built in `dev` but it refers to the `dev` version of `model_2`.
-- Tests are run against the `dev` versions of `model_2` and `model_3`.
+When `dbt build -s model_2+` is run:
+- `dev.model_2` is built using data from `prod.model_1`.
+- `dev.model_3` is built on top of `dev.model_2`.
+- Tests are run against the `dev.model_2` and `dev.model_3`.
 
 > For tests that refer to multipe tables, such as relationship tests, the `prod` version of the comparison model will be used when available.
 
-In short, your selected models are available in your `dev` environment with all that lovely `prod` quality!
-
-### Optional: default target fallback
-If desired, the package can return a `dev` model when the `prod` version can't be found. This is useful when adding several new models at once.
-
-Let's assume only `model_1` is in `prod` and I want to create `model_2` and `model_3`. First I create `model_2` in `dev` with `dbt run -s model_2`, then start working on `model_3`. By default, `dbt run -s model_3` would fail because `model_2` doesn't exist in `prod`. With fallback mode enabled, the package would use the `dev` model and the command would be successful.
+The selected models are now available in your development environment with production-quality data. The package can optionally return a `dev` model when the `prod` version can't be found. This is useful when adding several new models at once.
 
 ## Setup
 
 ### 1. Required variables
 
-After installing the package, you need to add some variables to `dbt_project.yml` so it knows where to find production data. This varies depending on how your project is configured.
+Add the relevant variables to `dbt_project.yml`. This varies depending on how your project is configured. The examples below should help you identify your project setup:
 
 | Setup                                                                                                     | Prod examples                               | Dev examples                                            |
 |-----------------------------------------------------------------------------------------------------------|---------------------------------------------|---------------------------------------------------------|
-| Custom schemas ([examples](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))    | `db.prod.table`</br>`db.prod_stg.stg_table` | `db.dbt_<name>.table`</br>`db.dbt_<name>_stg.stg_table` |
-| Custom env schemas ([example](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema)) | `db.prod.table`</br>`db.stg.stg_table`      | `db.dbt_<name>.table`</br>`db.dbt_<name>.stg_table`     |
 | Dev databases                                                                                             | `db.prod.table`</br>`db.prod_stg.stg_table` | `dev_db.prod.table`</br>`dev_db.prod_stg.stg_table`     |
+| Custom schemas ([examples](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))    | `db.prod.table`</br>`db.prod_stg.stg_table` | `db.dbt_<name>.table`</br>`db.dbt_<name>_stg.stg_table` |
+| Env schemas ([example](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))        | `db.prod.table`</br>`db.stg.stg_table`      | `db.dbt_<name>.table`</br>`db.dbt_<name>.stg_table`     |
 
 Open `profiles.yml` and find the relevant details for your setup:
-- **Custom schemas**: set `upstream_prod_schema` to the `schema` value of your `prod` target.
-- **Custom env schemas**: same as above, but also set the variable `upstream_prod_env_schemas` to `True`.
 - **Dev databases**: set `upstream_prod_database` to the `database` value of your `prod` target.
+- **Custom schemas**: set `upstream_prod_schema` to the `schema` value of your `prod` target.
+- **Env schemas**: same as above, but also set the variable `upstream_prod_env_schemas` to `True`.
+
+When using env schemas, you'll need to add an `is_upstream_prod` parameter to your `generate_schema_name` macro: 
+```sql
+-- New parameter should default to False
+{% macro generate_schema_name(custom_schema_name, node, is_upstream_prod=False) -%}
+
+    {%- set default_schema = target.schema -%}
+    -- Add the parameter to the clause that generates your prod schema names
+    -- Make sure to put the or condition in brackets
+    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
+
+        {{ custom_schema_name | trim }}
+
+    {%- else -%}
+
+        {{ default_schema }}
+
+    {%- endif -%}
+
+{%- endmacro %}
+```
+
+> These options can be combined. For example, if you use dev databases and env schemas you would set both `upstream_prod_database` and `upstream_prod_env_schemas`.
 
 ### 2. Optional variables
 - `upstream_prod_enabled`: Disables the package when False. Defaults to True.
@@ -61,7 +79,7 @@ Open `profiles.yml` and find the relevant details for your setup:
 
 **Example**
 
-I use Snowflake and each developer has a separate database with identically-named schemas. Here's how I have configured my project:
+I use Snowflake and each developer has a separate database with identically-named schemas. This is how my project is configured:
 
 ```yml
 # dbt_project.yml
@@ -73,8 +91,17 @@ vars:
     - prod
 ```
 
+The integration tests provide examples for all supported setups:
+- [Dev databases](https://github.com/LewisDavies/upstream-prod/tree/main/integration_tests/dev_db/dbt_project.yml)
+- [Custom schemas](https://github.com/LewisDavies/upstream-prod/tree/main/integration_tests/dev_sch/dbt_project.yml)
+- [Env schemas](https://github.com/LewisDavies/upstream-prod/tree/main/integration_tests/env_sch/dbt_project.yml)
+- [Dev databases & custom schemas](https://github.com/LewisDavies/upstream-prod/tree/main/integration_tests/dev_db_dev_sch/dbt_project.yml)
+- [Dev databases & env schemas](https://github.com/LewisDavies/upstream-prod/tree/main/integration_tests/dev_db_env_sch/dbt_project.yml)
+
 ### 3. Update `ref()`
-Next, you need to tell dbt to use this package's version of `{{ ref() }}` instead of the builtin macro. The recommended approach is to create a thin wrapper around `upstream-prod`. In your `macros` directory, create a file called `ref.sql` with the following contents:
+dbt needs to use this package's version of `{{ ref() }}` instead of the builtin macro. The recommended approach is to create a thin wrapper around `upstream-prod`.
+
+In your `macros` directory, create a file called `ref.sql` with the following contents:
 ```python
 {% macro ref(
     parent_model, 
@@ -94,4 +121,6 @@ Next, you need to tell dbt to use this package's version of `{{ ref() }}` instea
 Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`.
 
 ## Compatibility
-`upstream-prod` has been designed and tested on Snowflake. User reports indicate that it works perfectly with BigQuery and Redshift, and it should also work with most community-supported adapters - PRs are welcome if it doesn't!
+`upstream-prod` has been designed and tested on Snowflake. User reports indicate that it also works with BigQuery and Redshift, although you may need [RA3 nodes](https://aws.amazon.com/redshift/features/ra3/) for cross-database queries in Redshift.
+
+It should also work with community-supported adapters that specify a target database and schema - PRs are welcome if it doesn't!

@@ -3,29 +3,13 @@
 These instructions are intended to be used with Snowflake. They should work with other databases with minimal changes.
 
 1. Add example profile to `profiles.yml`
-2. Set up databases (Snowflake)
-    ```sql
-    create or replace database upstream_prod__prod_db;
-    create or replace database upstream_prod__dev_db;
+2. Switch to a role with permission to create new databases.
+3. Execute `sh run_tests.sh` for each test project and check the output for errors:
+    - `dev_db`
+    - `dev_db_dev_sch`
+    - `dev_db_env_sch`
+    - `dev_sch`
+    - `env_sch`
 
-    grant all on database upstream_prod__prod_db to role <your-role>;
-    grant all on database upstream_prod__dev_db to role <your-role>;
-    ```
-3. Run commands
-    ```sh
-    # Using dev schemas
-    dbt run -s stg__dev_fallback --vars 'upstream_prod_schema: prod' --target dev
-    dbt build -s dev_fallback --vars '{upstream_prod_schema: prod, upstream_prod_fallback: true}' --target dev
-    dbt run -s stg__defer_prod --vars 'upstream_prod_schema: prod' --target prod
-    dbt build -s defer_prod --vars 'upstream_prod_schema: prod' --target dev
-    # Using dev env schemas
-    dbt run -s stg__dev_fallback --vars '{upstream_prod_schema: prod, upstream_prod_env_schemas: true}' --target dev
-    dbt build -s dev_fallback --vars '{upstream_prod_schema: prod, upstream_prod_fallback: true, upstream_prod_env_schemas: true}' --target dev
-    dbt run -s stg__defer_prod --vars '{upstream_prod_schema: prod, upstream_prod_env_schemas: true}' --target prod
-    dbt build -s defer_prod --vars '{upstream_prod_schema: prod, upstream_prod_env_schemas: true}' --target dev
-    # Using dev databases
-    dbt run -s stg__dev_fallback --vars 'upstream_prod_database: upstream_prod__prod_db' --target dev_db
-    dbt build -s dev_fallback --vars '{upstream_prod_database: upstream_prod__prod_db, upstream_prod_fallback: true}' --target dev_db
-    dbt run -s stg__defer_prod --vars 'upstream_prod_database: upstream_prod__prod_db' --target prod_db
-    dbt build -s defer_prod --vars 'upstream_prod_database: upstream_prod__prod_db' --target dev_db
-    ```
+## Notes
+Files common to all projects are stored in the `_template` directory. They are symlinked with each test project with `create_symlinks.sh`.

@@ -1,0 +1,24 @@
+name: 'upstream_prod_integration_tests'
+version: '1.0.0'
+config-version: 2
+
+profile: 'upstream_prod_db_sch'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+models:
+  upstream_prod_integration_tests:
+    staging:
+      +schema: stg
+
+vars:
+  upstream_prod_database: upstream__prod_db
+  upstream_prod_fallback: true
+  upstream_prod_env_schemas: true

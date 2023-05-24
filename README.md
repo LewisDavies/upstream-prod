@@ -38,11 +38,11 @@ The selected models are now available in your development environment with produ
 
 Add the relevant variables to `dbt_project.yml`. This varies depending on how your project is configured. The examples below should help you identify your project setup:
 
-| Setup                                                                                                     | Prod examples                               | Dev examples                                            |
-|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|---------------------------------------------------------|
-| Dev databases                                                                                             | `db.prod.table`</br>`db.prod_stg.stg_table` | `dev_db.prod.table`</br>`dev_db.prod_stg.stg_table`     |
-| Custom schemas ([examples](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))    | `db.prod.table`</br>`db.prod_stg.stg_table` | `db.dbt_<name>.table`</br>`db.dbt_<name>_stg.stg_table` |
-| Env schemas ([example](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))        | `db.prod.table`</br>`db.stg.stg_table`      | `db.dbt_<name>.table`</br>`db.dbt_<name>.stg_table`     |
+| Setup                                                                                                           | Prod examples                               | Dev examples                                            |
+|-----------------------------------------------------------------------------------------------------------------|---------------------------------------------|---------------------------------------------------------|
+| Dev databases                                                                                                   | `db.prod.table`</br>`db.prod_stg.stg_table` | `dev_db.prod.table`</br>`dev_db.prod_stg.stg_table`     |
+| Custom schemas ([docs](https://docs.getdbt.com/docs/build/custom-schemas#what-is-a-custom-schema))              | `db.prod.table`</br>`db.prod_stg.stg_table` | `db.dbt_<name>.table`</br>`db.dbt_<name>_stg.stg_table` |
+| Env schemas ([docs](https://docs.getdbt.com/docs/build/custom-schemas#advanced-custom-schema-configuration))    | `db.prod.table`</br>`db.stg.stg_table`      | `db.dbt_<name>.table`</br>`db.dbt_<name>.stg_table`     |
 
 Open `profiles.yml` and find the relevant details for your setup:
 - **Dev databases**: set `upstream_prod_database` to the `database` value of your `prod` target.

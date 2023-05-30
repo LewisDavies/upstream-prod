@@ -4,6 +4,8 @@
 
 It is inspired by (but unrelated to) [similar work by Monzo](https://monzo.com/blog/2021/10/14/an-introduction-to-monzos-data-stack).
 
+> ⚠️ Setup instructions changed in version `0.5.0` - make sure to review them if updating from an earlier version.
+
 ## How it works
 I would often get errors when developing locally because my dev database had outdated or missing data. Rebuilding models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.
 
@@ -105,7 +107,6 @@ In your `macros` directory, create a file called `ref.sql` with the following co
 ```python
 {% macro ref(
     parent_model, 
-    current_model=this.name, 
     prod_database=var("upstream_prod_database", None), 
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
@@ -113,7 +114,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
     env_schemas=var("upstream_prod_env_schemas", False)
 ) %}
 
-  {% do return(upstream_prod.ref(parent_model, current_model, prod_database, prod_schema, enabled, fallback, env_schemas)) %}
+  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas)) %}
 
 {% endmacro %}
 ```

@@ -1,4 +1,5 @@
 # Setup
+set -e
 echo "\nSETTING UP ENVIRONMENT\n"
 dbt clean
 dbt deps
@@ -10,6 +11,9 @@ echo "\nBUILDING STAGING MODELS\n"
 dbt build -s stg__defer_prod --target prod
 dbt build -s stg__dev_fallback
 
-# Build & test upstream models
-echo "\nBUILDING UPSTREAM MODELS\n"
+# Build & test downstream models
+echo "\nBUILDING DOWNSTREAM MODELS\n"
 dbt build -s defer_prod dev_fallback
+
+# Check dbt-codegen compatibility
+dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}'

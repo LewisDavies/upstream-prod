@@ -1,17 +1,17 @@
 {% macro ref(
     parent_model, 
-    current_model=this.name, 
     prod_database=var("upstream_prod_database", None), 
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
     fallback=var("upstream_prod_fallback", False),
     env_schemas=var("upstream_prod_env_schemas", False)
 ) %}
-    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, current_model, prod_database, prod_schema, enabled, fallback, env_schemas)) }}
+    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas)) }}
 {% endmacro %}
 
-{% macro default__ref(parent_model, current_model, prod_database, prod_schema, enabled, fallback, env_schemas) %}
+{% macro default__ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas) %}
     {% set parent_ref = builtins.ref(parent_model) %}
+    {% set current_model = this.name if this is defined else 'unknown model' %}
 
     -- Return builtin ref during parsing or when disabled
     {% 

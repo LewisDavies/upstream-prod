@@ -4,7 +4,7 @@
 
 It is inspired by (but unrelated to) [similar work by Monzo](https://monzo.com/blog/2021/10/14/an-introduction-to-monzos-data-stack).
 
-> ⚠️ Setup instructions changed in version `0.5.0` - make sure to review them if updating from an earlier version.
+> #### ⚠️ Setup instructions changed in version `0.5.0` - make sure to review them if updating from an earlier version.
 
 ## How it works
 I would often get errors when developing locally because my dev database had outdated or missing data. Rebuilding models was often time-consuming and it wasn't easy to tell how many layers deep I needed to go.

@@ -39,6 +39,90 @@ models:
               values: ['defer_prod']
 
 
+  - name: defer_vers_new
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__defer_vers_v2']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['defer_vers_new']
+      - name: new_col
+        tests:
+          - accepted_values:
+              values: [2]
+
+
+  - name: defer_vers_old
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__defer_vers_v1']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['defer_vers_old']
+      - name: col_to_remove
+        tests:
+          - accepted_values:
+              values: [1]
+
+
   - name: dev_fallback
     columns:
       # Source

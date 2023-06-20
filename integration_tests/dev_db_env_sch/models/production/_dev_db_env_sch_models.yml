@@ -15,7 +15,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              values: ['stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -28,7 +28,7 @@ models:
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
@@ -53,7 +53,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              values: ['stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -66,7 +66,7 @@ models:
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
@@ -95,7 +95,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              values: ['stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -108,7 +108,7 @@ models:
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
@@ -133,11 +133,11 @@ models:
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              values: ['upstream__dev_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['dev_stg']
+              values: ['dev']
       - name: source_model
         tests:
           - accepted_values:
@@ -150,7 +150,7 @@ models:
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
@@ -159,41 +159,3 @@ models:
         tests:
           - accepted_values:
               values: ['dev_fallback']
-
-
-  - name: ephem
-    columns:
-      # Source
-      - name: source_target
-        tests:
-          - accepted_values:
-              values: ['dev']
-      - name: source_database
-        tests:
-          - accepted_values:
-              values: ['upstream__prod_db']
-      - name: source_schema
-        tests:
-          - accepted_values:
-              values: ['dev_stg']
-      - name: source_model
-        tests:
-          - accepted_values:
-              values: ['stg__ephem']
-      # This
-      - name: this_target
-        tests:
-          - accepted_values:
-              values: ['dev']
-      - name: this_database
-        tests:
-          - accepted_values:
-              values: ['upstream__prod_db']
-      - name: this_schema
-        tests:
-          - accepted_values:
-              values: ['dev']
-      - name: this_model
-        tests:
-          - accepted_values:
-              values: ['ephem']

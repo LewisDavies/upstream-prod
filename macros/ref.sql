@@ -88,11 +88,15 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         {{ return(parent_ref) }}
     -- Try deferring to prod for non-selected upstream models
     {% else %}
+        {% set parent_node = graph.nodes.values() 
+            | selectattr("name", "equalto", parent_model)
+            | first %}
+
+        -- Use builtin ref for ephemeral models
+        {% if parent_node.config.materialized == "ephemeral" %}
+            {{ return(parent_ref) }}
         -- When using env schemas, use the graph to find the schema name that would be used in production environments
-        {% if env_schemas == true %}
-            {% set parent_node = graph.nodes.values() 
-                | selectattr("name", "equalto", parent_model)
-                | first %}
+        {% elif env_schemas == true %}
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) %}
         -- No prod_schema value means a one-DB-per-developer setup, so assume schema names are consistent across

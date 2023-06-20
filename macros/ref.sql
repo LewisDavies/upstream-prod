@@ -116,7 +116,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
         -- If prod relation doesn't exist and fallback is enabled, try the dev relation instead.
         {% if return_ref is none and fallback == true %}
-            {{ log("[" ~ current_model ~ "] " ~ parent_model.table ~ " not found in prod, falling back to default target", info=True) }}
+            {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
             {% set return_ref = load_relation(parent_ref) %}
         {% endif %}
 
@@ -129,7 +129,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
 DATABASE: {{ parent_database }}
 SCHEMA:   {{ parent_schema }}
-RELATION: {{ parent_model.table }}
+RELATION: {{ parent_ref.table }}
 
 Check your variable settings in the README or create a GitHub issue for more help.
             {%- endset %}

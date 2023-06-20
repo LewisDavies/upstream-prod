@@ -4,13 +4,14 @@
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
     fallback=var("upstream_prod_fallback", False),
-    env_schemas=var("upstream_prod_env_schemas", False)
+    env_schemas=var("upstream_prod_env_schemas", False),
+    version=None
 ) %}
-    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas)) }}
+    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version)) }}
 {% endmacro %}
 
-{% macro default__ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas) %}
-    {% set parent_ref = builtins.ref(parent_model) %}
+{% macro default__ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version) %}
+    {% set parent_ref = builtins.ref(parent_model, version=version) %}
     {% set current_model = this.name if this is defined else 'unknown model' %}
 
     -- Return builtin ref during parsing or when disabled
@@ -111,11 +112,11 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
         -- Build final ref and check that it exists
         {% set parent_database = prod_database or parent_ref.database %}
-        {% set return_ref = adapter.get_relation(parent_database, parent_schema, parent_model) %}
+        {% set return_ref = adapter.get_relation(parent_database, parent_schema, parent_ref.table) %}
 
         -- If prod relation doesn't exist and fallback is enabled, try the dev relation instead.
         {% if return_ref is none and fallback == true %}
-            {{ log("[" ~ current_model ~ "] " ~ parent_model ~ " not found in prod, falling back to default target", info=True) }}
+            {{ log("[" ~ current_model ~ "] " ~ parent_model.table ~ " not found in prod, falling back to default target", info=True) }}
             {% set return_ref = load_relation(parent_ref) %}
         {% endif %}
 
@@ -128,7 +129,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
 DATABASE: {{ parent_database }}
 SCHEMA:   {{ parent_schema }}
-RELATION: {{ parent_model }}
+RELATION: {{ parent_model.table }}
 
 Check your variable settings in the README or create a GitHub issue for more help.
             {%- endset %}

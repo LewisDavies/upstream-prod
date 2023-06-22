@@ -89,9 +89,20 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         {{ return(parent_ref) }}
     -- Try deferring to prod for non-selected upstream models
     {% else %}
-        {% set parent_node = graph.nodes.values() 
-            | selectattr("name", "equalto", parent_model)
-            | first %}
+        -- Find parent node, accounting for (un)specified model version
+        {% set matching_nodes = [] %}
+        {% for n in graph.nodes.values() if n["name"] == parent_model %}
+            {% if version is not none %}
+                {% if n["version"] == version %}
+                    {% do matching_nodes.append(n) %}
+                {% endif %}
+            {% else %}
+                {% if n["version"] == n["latest_version"] %}
+                    {% do matching_nodes.append(n) %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% set parent_node = matching_nodes | first %}
 
         -- Use builtin ref for ephemeral models
         {% if parent_node.config.materialized == "ephemeral" %}

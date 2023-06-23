@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg__defer_vers
+    contract: {enforced: true}
+    columns:
+      - name: source_target
+        data_type: varchar
+      - name: source_database
+        data_type: varchar
+      - name: source_schema
+        data_type: varchar
+      - name: source_model
+        data_type: varchar
+      - name: col_to_remove
+        data_type: int
+    versions:
+      - v: 1
+      - v: 2
+        columns:
+          - include: all
+            exclude: [col_to_remove]
+          - name: new_col
+            data_type: int

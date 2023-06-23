@@ -115,7 +115,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
     version=None
 ) %}
 
-  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas)) %}
+  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version)) %}
 
 {% endmacro %}
 ```

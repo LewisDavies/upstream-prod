@@ -110,7 +110,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         -- When using env schemas, use the graph to find the schema name that would be used in production environments
         {% elif env_schemas == true %}
             {% set custom_schema_name = parent_node.config.schema %}
-            {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) %}
+            {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
         -- No prod_schema value means a one-DB-per-developer setup, so assume schema names are consistent across
         -- environments and use the schema name from the default parent ref
         {% elif prod_schema is none %}

@@ -161,6 +161,44 @@ models:
               values: ['dev_fallback']
 
 
+  - name: dev_newer
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__dev_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['dev_stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__dev_newer']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__dev_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['dev_newer']
+
+
   - name: ephem
     columns:
       # Source

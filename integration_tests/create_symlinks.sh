@@ -7,4 +7,5 @@ do
     ln -f _template/macros/* $proj/macros
     ln -f _template/models/production/* $proj/models/production
     ln -f _template/models/staging/* $proj/models/staging
+    ln -f _template/tests/singular_test.sql $proj/tests
 done

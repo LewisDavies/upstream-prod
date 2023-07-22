@@ -77,11 +77,13 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
 
     -- Find models being tested
     {% for test in selected_tests %}
-        {% set tested_model = graph.nodes[test].file_key_name.split(".")[1] %}
-        -- Return dev relation for explicitly selected models
-        {% if parent_model == tested_model %}
-            {{ return(parent_ref) }}
-        {% endif %}
+        {% set test_node = graph.nodes[test] %}
+        {% for test_ref in test_node.refs %}
+            -- Return dev relation for explicitly selected models
+            {% if parent_model == test_ref.name %}
+                {{ return(parent_ref) }}
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 
     -- Use dev relations for models being built during the current run

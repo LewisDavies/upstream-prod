@@ -39,10 +39,12 @@
 
     -- Find models being tested
     {% for test in selected_tests %}
-        {% set tested_model = graph.nodes[test].file_key_name.split(".")[1] %}
-        {% if parent_model == tested_model %}
-            {% do selected.append(parent_model) %}
-        {% endif %}
+        {% set test_node = graph.nodes[test] %}
+        {% for test_ref in test_node.refs %}
+            {% if parent_model == test_ref.name %}
+                {% do selected.append(parent_model) %}
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 
     {{ return(selected) }}

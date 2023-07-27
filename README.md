@@ -78,7 +78,7 @@ When using env schemas, you also need to add the `is_upstream_prod` parameter to
 - `upstream_prod_enabled`: Disables the package when False. Defaults to True.
 - `upstream_prod_disabled_targets`: List of targets where the package should be disabled.
 - `upstream_prod_fallback`: Whether to fall back to the default target when a model can't be found in prod. Defaults to False.
-- `upstream_prod_prefer_recent`: Whether to use dev relations that were updated more recently than prod; particularly useful when working on multiple large / slow models at once. Defaults to False.
+- `upstream_prod_prefer_recent`: Whether to use dev relations that were updated more recently than prod; particularly useful when working on multiple large / slow models at once. Only supported in Snowflake & BigQuery. Defaults to False.
 
 **Example**
 

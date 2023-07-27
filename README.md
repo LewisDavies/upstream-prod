@@ -78,6 +78,7 @@ When using env schemas, you also need to add the `is_upstream_prod` parameter to
 - `upstream_prod_enabled`: Disables the package when False. Defaults to True.
 - `upstream_prod_disabled_targets`: List of targets where the package should be disabled.
 - `upstream_prod_fallback`: Whether to fall back to the default target when a model can't be found in prod. Defaults to False.
+- `upstream_prod_prefer_recent`: Whether to use dev relations that were updated more recently than prod; particularly useful when working on multiple large / slow models at once. Only supported in Snowflake & BigQuery. Defaults to False.
 
 **Example**
 
@@ -88,6 +89,7 @@ I use Snowflake and each developer has a separate database with identically-name
 vars:
   upstream_prod_database: <prod_db> # replace with your prod db
   upstream_prod_fallback: True
+  upstream_prod_prefer_recent: True
   upstream_prod_disabled_targets:
     - ci
     - prod
@@ -112,10 +114,11 @@ In your `macros` directory, create a file called `ref.sql` with the following co
     enabled=var("upstream_prod_enabled", True),
     fallback=var("upstream_prod_fallback", False),
     env_schemas=var("upstream_prod_env_schemas", False),
-    version=None
+    version=None,
+    prefer_recent=var("upstream_prod_prefer_recent", False)
 ) %}
 
-  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version)) %}
+  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent)) %}
 
 {% endmacro %}
 ```

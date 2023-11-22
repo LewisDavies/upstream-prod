@@ -2,6 +2,10 @@
     {{ return(adapter.dispatch("get_table_update_ts", "upstream_prod")(relation)) }}
 {% endmacro %}
 
+{% macro default__get_table_update_ts(relation) %}
+    -- This is intentionally blank to avoid an error on non-compatible databases
+{% endmacro %}
+
 {% macro snowflake__get_table_update_ts(relation) %}
 
     {% set table_info_query %}

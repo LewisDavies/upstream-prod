@@ -32,7 +32,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
@@ -70,7 +70,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
@@ -112,7 +112,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
@@ -137,7 +137,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['dev_stg']
+              values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -154,7 +154,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
@@ -175,7 +175,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['dev_stg']
+              values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -192,7 +192,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
@@ -213,7 +213,7 @@ models:
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['dev_stg']
+              values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
@@ -230,7 +230,7 @@ models:
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['dev']
+              values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:

@@ -16,6 +16,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   upstream_prod_integration_tests:
+    marts:
+      +schema: marts
     staging:
       +schema: stg
 

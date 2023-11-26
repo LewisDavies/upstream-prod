@@ -13,7 +13,7 @@ dbt build -s stg__dev_fallback stg__dev_newer
 
 # Build & test downstream models
 echo "\nBUILDING DOWNSTREAM MODELS\n"
-dbt build -s models/production
+dbt build -s models/marts
 
 # Check dbt-codegen compatibility
 dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}'

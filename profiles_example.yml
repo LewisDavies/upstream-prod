@@ -1,0 +1,77 @@
+upstream_prod_db:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__dev_db
+      schema: prod
+      threads: 1
+      client_session_keep_alive: False
+    prod:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__prod_db
+      schema: prod
+      threads: 1
+      client_session_keep_alive: False
+
+upstream_prod_db_sch:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__dev_db
+      schema: dev
+      threads: 1
+      client_session_keep_alive: False
+    prod:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__prod_db
+      schema: prod
+      threads: 1
+      client_session_keep_alive: False
+
+upstream_prod_sch:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__prod_db
+      schema: dev
+      threads: 1
+      client_session_keep_alive: False
+    prod:
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      password: "{{ env_var('UP_SF_PASSWORD') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      database: upstream__prod_db
+      schema: prod
+      threads: 1
+      client_session_keep_alive: False

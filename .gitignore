@@ -2,5 +2,6 @@
 target/
 dbt_packages/
 logs/
+.venv
 
 .DS_Store

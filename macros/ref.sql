@@ -30,8 +30,8 @@
         {{ return(parent_ref) }}
     -- Try deferring to prod for non-selected upstream models
     {% else %}
+        {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
         {% if env_schemas == true %}
-            {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
         -- No prod_schema = one-DB-per-env setup with same schema structure in all
@@ -43,7 +43,15 @@
         {% endif %}
         {% set parent_database = prod_database or parent_ref.database %}
 
-        {% set prod_rel = adapter.get_relation(parent_database, parent_schema, parent_ref.table) %}
+        -- Check whether the relations have been materialised in both envs
+        /***************
+        prod_rel_name helps the package find the correct prod relation for projects using a custom 
+        generate_alias_name macro. It assumes that custom aliases are only used in dev envs and prod
+        relations always have the same name as the model (+ version suffix when needed).
+        It's hacky but it seems to work. 
+        ***************/
+        {% set prod_rel_name = parent_node.path.split("/")[-1].replace(".sql", "") %}
+        {% set prod_rel = adapter.get_relation(parent_database, parent_schema, prod_rel_name) %}
         {% set dev_rel = load_relation(parent_ref) %}
         {% set prod_exists = prod_rel is not none %}
         {% set dev_exists = dev_rel is not none %}
@@ -70,10 +78,10 @@
                 {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
                 {{ return(dev_rel) }}
             {% else %}
-                {{ upstream_prod.raise_ref_not_found_error(current_model, dev_rel) }}
+                {{ upstream_prod.raise_ref_not_found_error(current_model, parent_ref.database, parent_ref.schema, parent_ref.identifier) }}
             {% endif %}
         {% else %}
-            {{ upstream_prod.raise_ref_not_found_error(current_model, prod_rel) }}
+            {{ upstream_prod.raise_ref_not_found_error(current_model, parent_database, parent_schema, prod_rel_name) }}
         {% endif %}
 
     {% endif %}

@@ -50,7 +50,8 @@
         relations always have the same name as the model (+ version suffix when needed).
         It's hacky but it seems to work. 
         ***************/
-        {% set prod_rel_name = parent_node.path.split("/")[-1].replace(".sql", "") %}
+        {% set re = modules.re %}
+        {% set prod_rel_name = re.search("\w+(?=\.)", parent_node.path).group() %}
         {% set prod_rel = adapter.get_relation(parent_database, parent_schema, prod_rel_name) %}
         {% set dev_rel = load_relation(parent_ref) %}
         {% set prod_exists = prod_rel is not none %}

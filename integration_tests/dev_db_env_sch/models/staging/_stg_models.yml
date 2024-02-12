@@ -5,13 +5,13 @@ models:
     contract: {enforced: true}
     columns:
       - name: source_target
-        data_type: varchar
+        data_type: string
       - name: source_database
-        data_type: varchar
+        data_type: string
       - name: source_schema
-        data_type: varchar
+        data_type: string
       - name: source_model
-        data_type: varchar
+        data_type: string
       - name: col_to_remove
         data_type: int
     versions:

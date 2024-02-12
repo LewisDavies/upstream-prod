@@ -1,0 +1,60 @@
+# Databricks example
+upstream_prod_db:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: upstream__dev_db
+      schema: prod
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1
+    prod:
+      type: databricks
+      catalog: upstream__prod_db
+      schema: prod
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1
+
+upstream_prod_db_sch:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: upstream__dev_db
+      schema: dev
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1
+    prod:
+      type: databricks
+      catalog: upstream__prod_db
+      schema: prod
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1
+
+upstream_prod_sch:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      catalog: upstream__prod_db
+      schema: dev
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1
+    prod:
+      type: databricks
+      catalog: upstream__prod_db
+      schema: prod
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      threads: 1

@@ -6,12 +6,33 @@
     fallback=var("upstream_prod_fallback", False),
     env_schemas=var("upstream_prod_env_schemas", False),
     version=None,
-    prefer_recent=var("upstream_prod_prefer_recent", False)
+    prefer_recent=var("upstream_prod_prefer_recent", False),
+    prod_database_replace=var("upstream_prod_database_replace", None)
 ) %}
-    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent)) }}
+    {{ return(adapter.dispatch("ref", "upstream_prod")(
+        parent_model, 
+        prod_database, 
+        prod_schema, 
+        enabled, 
+        fallback, 
+        env_schemas, 
+        version, 
+        prefer_recent, 
+        prod_database_replace
+    )) }}
 {% endmacro %}
 
-{% macro default__ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent) %}
+{% macro default__ref(
+    parent_model, 
+    prod_database, 
+    prod_schema, 
+    enabled, 
+    fallback, 
+    env_schemas, 
+    version, 
+    prefer_recent,
+    prod_database_replace
+) %}
     {% set parent_ref = builtins.ref(parent_model, version=version) %}
     {% set current_model = this.name if this is defined else 'unknown model' %}
 
@@ -22,7 +43,7 @@
     {% endif %}
 
     -- Raise error if at least one required variable is not set
-    {{ upstream_prod.check_reqd_vars(prod_database, prod_schema, env_schemas) }}
+    {{ upstream_prod.check_reqd_vars(prod_database, prod_schema, env_schemas, prod_database_replace) }}
 
     {% set selected = upstream_prod.find_selected_nodes(parent_model) %}
     -- Use dev relations for models being built during the current run
@@ -31,17 +52,25 @@
     -- Try deferring to prod for non-selected upstream models
     {% else %}
         {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
+        
+        -- Set prod schema name
         {% if env_schemas == true %}
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
-        -- No prod_schema = one-DB-per-env setup with same schema structure in all
         {% elif prod_schema is none %}
+            -- No prod_schema = one-DB-per-env setup with same schema structure in all
             {% set parent_schema = parent_ref.schema %}
-        -- Schema structure is <env>[_<level>], e.g. prod, prod_stg or dev_int 
         {% else %}
+            -- Schema structure is <env>[_<level>], e.g. prod, prod_stg or dev_int 
             {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
         {% endif %}
-        {% set parent_database = prod_database or parent_ref.database %}
+
+        -- Set prod database name
+        {% if prod_database_replace is not none %}
+            {% set parent_database = parent_ref.database.replace(prod_database_replace[0], prod_database_replace[1]) %}
+        {% else %}
+            {% set parent_database = prod_database or parent_ref.database %}
+        {% endif %}
 
         -- Check whether the relations have been materialised in both envs
         /***************

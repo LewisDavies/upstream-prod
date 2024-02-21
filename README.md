@@ -55,20 +55,14 @@ When using env schemas, you also need to add the `is_upstream_prod` parameter to
 ```sql
 -- is_upstream_prod should default to False
 {% macro generate_schema_name(custom_schema_name, node, is_upstream_prod=False) -%}
-
     {%- set default_schema = target.schema -%}
     -- Add the parameter to the clause that generates your prod schema names, making sure to 
     -- enclose the *or* condition in brackets 
     {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
-
         {{ custom_schema_name | trim }}
-
     {%- else -%}
-
         {{ default_schema }}
-
     {%- endif -%}
-
 {%- endmacro %}
 ```
 
@@ -115,10 +109,21 @@ In your `macros` directory, create a file called `ref.sql` with the following co
     fallback=var("upstream_prod_fallback", False),
     env_schemas=var("upstream_prod_env_schemas", False),
     version=None,
-    prefer_recent=var("upstream_prod_prefer_recent", False)
+    prefer_recent=var("upstream_prod_prefer_recent", False),
+    prod_database_replace=var("upstream_prod_database_replace", None)
 ) %}
 
-  {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent)) %}
+    {% do return(upstream_prod.ref(
+        parent_model, 
+        prod_database, 
+        prod_schema, 
+        enabled, 
+        fallback, 
+        env_schemas, 
+        version, 
+        prefer_recent,
+        prod_database_replace
+    )) %}
 
 {% endmacro %}
 ```
@@ -126,6 +131,10 @@ In your `macros` directory, create a file called `ref.sql` with the following co
 Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`.
 
 ## Compatibility
-`upstream-prod` has been designed and tested on Snowflake. User reports indicate that it also works with BigQuery and Redshift, although you may need [RA3 nodes](https://aws.amazon.com/redshift/features/ra3/) for cross-database queries in Redshift.
+`upstream-prod` can be used on: 
+- Snowflake
+- BigQuery
+- Redshift ([RA3 nodes](https://aws.amazon.com/redshift/features/ra3/) are required to query across databases)
+- Databricks
 
 It should also work with community-supported adapters that specify a target database and schema - PRs are welcome if it doesn't!

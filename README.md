@@ -8,8 +8,11 @@ In a typical project, prod and dev models are materialised in [separate environm
 
 `upstream-prod` solves this by intelligently redirecting `ref`s to prod outputs. It is highly adaptable and can be used whether your environments are in separate schemas, databases, or a combination of both. On most warehouses it can even compare dev and prod outputs and use the most recently-updated relation.
 
+> ⚠️ Setup instructions changed in version `0.8.0` - you'll need to update your `ref` macro if upgrading from an earlier version.
 
 ## Setup
+
+> ℹ️ If you need help setting up the package, please create an issue or tag / DM @LewisDavies on dbt's Slack.
 
 The package relies on a few variables that indicate where prod data is avaiable. The exact requirements depend on your setup; use the questions below to find the correct variables for your project. 
 

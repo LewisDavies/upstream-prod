@@ -86,9 +86,9 @@
         {% set prod_exists = prod_rel is not none %}
         {% set dev_exists = dev_rel is not none %}
 
-        {% if prod_exists %}
+        {% if prod_exists == true %}
             -- When option enabled, return the mostly recently updated of dev & prod relations
-            {% if prefer_recent and dev_exists %}
+            {% if prefer_recent == true and dev_exists == true %}
                 -- Find when dev & prod relations were last updated
                 {% set dev_updated = upstream_prod.get_table_update_ts(dev_rel) %}
                 {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
@@ -104,7 +104,7 @@
             {% endif %}
         {% elif dev_exists %}
             -- Return dev relation if prod doesn't exist & option is enabled
-            {% if fallback %}
+            {% if fallback == true %}
                 {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
                 {{ return(dev_rel) }}
             {% else %}

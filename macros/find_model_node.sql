@@ -4,7 +4,7 @@
 
 {% macro default__find_model_node(model, version) %}
 
-    {% if execute %}
+    {% if execute == true %}
         {% set matching_nodes = [] %}
         {% for n in graph.nodes.values() if n["name"] == model %}
             {% if version is not none %}

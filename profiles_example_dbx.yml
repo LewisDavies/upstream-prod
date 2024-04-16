@@ -9,7 +9,7 @@ upstream_prod_db:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32
     prod:
       type: databricks
       catalog: upstream__prod_db
@@ -17,7 +17,7 @@ upstream_prod_db:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32
 
 upstream_prod_db_sch:
   target: dev
@@ -29,7 +29,7 @@ upstream_prod_db_sch:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32
     prod:
       type: databricks
       catalog: upstream__prod_db
@@ -37,7 +37,7 @@ upstream_prod_db_sch:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32
 
 upstream_prod_sch:
   target: dev
@@ -49,7 +49,7 @@ upstream_prod_sch:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32
     prod:
       type: databricks
       catalog: upstream__prod_db
@@ -57,4 +57,4 @@ upstream_prod_sch:
       host: "{{ env_var('UP_DBX_HOST') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       token: "{{ env_var('UP_DBX_TOKEN') }}"
-      threads: 1
+      threads: 32

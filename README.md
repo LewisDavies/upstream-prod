@@ -272,7 +272,7 @@ Now that your dev models are using prod data, you DAG would look like this:
 ```
 
 ## Compatibility
-`upstream-prod` was initially designed on Snowflake and is now primarily tested on Databricks. Based on my experience and user reports, it is known to work on:
+`upstream-prod` is built and tested on Snowflake. Based on my experience and user reports, it is known to work on:
 - Snowflake
 - Databricks
 - BigQuery

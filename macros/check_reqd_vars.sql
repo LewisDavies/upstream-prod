@@ -25,7 +25,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
     {% endif %}
 
     -- The variables below are incompatible so only one should be provided
-    {% if prod_database is none and prod_database_replace is none %}
+    {% if prod_database is not none and prod_database_replace is not none %}
         {% set error_msg -%}
 upstream_prod has been provided with two incompatible variables. Only one of the following should be set:
 - upstream_prod_database

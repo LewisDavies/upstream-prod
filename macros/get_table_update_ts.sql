@@ -5,7 +5,7 @@
 {% macro default__get_table_update_ts(relation) %}
 
     {% if target.type in ("snowflake", "databricks") %}
-        {# Query assumes database objects don't have case-sensitive names #}
+        -- Query assumes database objects don't have case-sensitive names
         {% set table_info_query %}
             select
                 last_altered 

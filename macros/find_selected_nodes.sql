@@ -24,7 +24,7 @@
     Example: my_model has a relationship test against my_stg_model and dbt test -s my_model is run.
     As my_model was explicitly selected by the user, the dev relation is used as the base and is
     compared to the prod version of my_stg_model.
-    /*******************/
+    *******************/
 
     -- Find models & snapshots selected for current run
     {% set selected = [] %}

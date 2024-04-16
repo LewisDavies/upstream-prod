@@ -11,7 +11,7 @@ upstream_prod_db:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__dev_db
       schema: prod
-      threads: 1
+      threads: 32
       client_session_keep_alive: False
     prod:
       type: snowflake
@@ -22,7 +22,7 @@ upstream_prod_db:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__prod_db
       schema: prod
-      threads: 1
+      threads: 32
       client_session_keep_alive: False
 
 upstream_prod_db_sch:
@@ -37,7 +37,7 @@ upstream_prod_db_sch:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__dev_db
       schema: dev
-      threads: 1
+      threads: 32
       client_session_keep_alive: False
     prod:
       type: snowflake
@@ -48,7 +48,7 @@ upstream_prod_db_sch:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__prod_db
       schema: prod
-      threads: 1
+      threads: 32
       client_session_keep_alive: False
 
 upstream_prod_sch:
@@ -63,7 +63,7 @@ upstream_prod_sch:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__prod_db
       schema: dev
-      threads: 1
+      threads: 32
       client_session_keep_alive: False
     prod:
       type: snowflake
@@ -74,5 +74,5 @@ upstream_prod_sch:
       warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
       database: upstream__prod_db
       schema: prod
-      threads: 1
+      threads: 32
       client_session_keep_alive: False

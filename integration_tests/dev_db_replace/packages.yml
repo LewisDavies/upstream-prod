@@ -1,0 +1,4 @@
+packages:
+    - local: ../../
+    - package: dbt-labs/codegen
+      version: 0.9.0

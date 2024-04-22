@@ -54,7 +54,10 @@
         {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
         
         -- Set prod schema name
-        {% if env_schemas == true %}
+        {% if parent_node.resource_type == "snapshot" %}
+            -- Snapshots use the same schema name regardless of the environment
+            {% set parent_schema = parent_node.schema %}
+        {% elif env_schemas == true %}
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
         {% elif prod_schema is none %}

@@ -235,3 +235,41 @@ models:
         tests:
           - accepted_values:
               values: ['ephem']
+
+
+  - name: snapshot_example
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['snapshots']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['snp__example']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__dev_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev_marts']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['snapshot_example']

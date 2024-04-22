@@ -8,6 +8,7 @@ do
     mkdir -p $proj/macros
     mkdir -p $proj/models/marts
     mkdir -p $proj/models/staging
+    mkdir -p $proj/snapshots
     mkdir -p $proj/tests
     # Symlink template files to test project
     ln -f _template/packages.yml $proj
@@ -15,6 +16,7 @@ do
     ln -f _template/macros/* $proj/macros
     ln -f _template/models/marts/* $proj/models/marts
     ln -f _template/models/staging/* $proj/models/staging
+    ln -f _template/snapshots/* $proj/snapshots
     ln -f _template/tests/* $proj/tests
     # Run test project
     cd $tests_dir/$proj

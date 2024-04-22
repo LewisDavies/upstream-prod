@@ -21,6 +21,13 @@ models:
     staging:
       +schema: stg
 
+snapshots:
+  upstream_prod_integration_tests:
+    target_schema: snapshots
+    unique_key: id
+    strategy: timestamp
+    updated_at: updated_at
+
 vars:
   upstream_prod_database_replace: [dev, prod]
   upstream_prod_fallback: true

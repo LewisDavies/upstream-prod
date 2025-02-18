@@ -22,5 +22,14 @@ echo "## BUILDING DOWNSTREAM MODELS"
 echo ""
 dbt build -s models/marts
 
+# Check --empty flag
+echo ""
+echo "## CHECKING EMPTY FLAG"
+echo ""
+dbt build -s defer_prod --empty
+
 # Check dbt-codegen compatibility
+echo ""
+echo "## CHECKING CODEGEN OUTPUT"
+echo ""
 dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}'

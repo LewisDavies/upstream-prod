@@ -42,7 +42,6 @@
     so we can't simply use the user's project name when one isn't supplied. Instead we will match on just the model
     name - not project + model name - when only one arg (the model name) is supplied.
     */
-
     {% if parent_arg_2 is none %}
         {% set parent_project = None %}
         {% set parent_model = parent_arg_1 %}
@@ -69,7 +68,7 @@
         {{ return(parent_ref) }}
     -- Try deferring to prod for non-selected upstream models
     {% else %}
-        {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
+        {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
         
         -- Set prod schema name
         {% if parent_node.resource_type == "snapshot" %}

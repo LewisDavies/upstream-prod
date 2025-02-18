@@ -36,14 +36,12 @@
     prefer_recent,
     prod_database_replace
 ) %}
-    -- Handle two-argument refs
-    -- TODO: update all usages of parent_model 
-    -- TODO: check find_selected_nodes macro (how to pass project as well?)
-    -- TODO: check find_model_node macro
+    /* Handle two-argument refs
 
-    -- for packages, project name is the name of the package, e.g. model.facebook_ads.facebook_ads__account_report
-    -- this means we can't simply use the user's project name when one isn't supplied
-    -- instead, when only one arg (the model name) is supplied, we will match on just the model name, not project + model name
+    For packages, the project name is the name of the package, e.g. model.facebook_ads.facebook_ads__account_report,
+    so we can't simply use the user's project name when one isn't supplied. Instead we will match on just the model
+    name - not project + model name - when only one arg (the model name) is supplied.
+    */
 
     {% if parent_arg_2 is none %}
         {% set parent_project = None %}

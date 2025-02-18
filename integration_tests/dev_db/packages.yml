@@ -1,4 +1,5 @@
 packages:
     - local: ../../
+    - local: ../import_project
     - package: dbt-labs/codegen
       version: 0.9.0

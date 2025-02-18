@@ -13,7 +13,7 @@ echo ""
 echo "## BUILDING STAGING MODELS"
 echo ""
 dbt snapshot --target prod
-dbt build -s stg__defer_prod stg__defer_vers stg__dev_newer --target prod
+dbt build -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project --target prod
 dbt build -s stg__dev_fallback stg__dev_newer
 
 # Build & test downstream models

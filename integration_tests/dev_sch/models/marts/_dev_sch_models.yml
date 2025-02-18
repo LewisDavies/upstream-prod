@@ -1,6 +1,82 @@
 version: 2
 
 models:
+  - name: cross_project
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['prod_stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__cross_project']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev_marts']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['cross_project']
+
+
+  - name: defer_prod_two_arg
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['prod_stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__defer_prod']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev_marts']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['defer_prod_two_arg']
+
+
   - name: defer_prod
     columns:
       # Source

@@ -1,5 +1,6 @@
 {% macro ref(
-    parent_model, 
+    parent_arg_1,
+    parent_arg_2=None, 
     prod_database=var("upstream_prod_database", None), 
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
@@ -10,7 +11,8 @@
     prod_database_replace=var("upstream_prod_database_replace", None)
 ) %}
     {{ return(adapter.dispatch("ref", "upstream_prod")(
-        parent_model, 
+        parent_arg_1, 
+        parent_arg_2, 
         prod_database, 
         prod_schema, 
         enabled, 
@@ -23,7 +25,8 @@
 {% endmacro %}
 
 {% macro default__ref(
-    parent_model, 
+    parent_arg_1, 
+    parent_arg_2, 
     prod_database, 
     prod_schema, 
     enabled, 
@@ -33,8 +36,22 @@
     prefer_recent,
     prod_database_replace
 ) %}
-    {% set parent_ref = builtins.ref(parent_model, version=version) %}
-    {% set current_model = this.name if this is defined else 'unknown model' %}
+    /* Handle two-argument refs
+
+    For packages, the project name is the name of the package, e.g. model.facebook_ads.facebook_ads__account_report,
+    so we can't simply use the user's project name when one isn't supplied. Instead we will match on just the model
+    name - not project + model name - when only one arg (the model name) is supplied.
+    */
+    {% if parent_arg_2 is none %}
+        {% set parent_project = None %}
+        {% set parent_model = parent_arg_1 %}
+        {% set parent_ref = builtins.ref(parent_model, version=version) %}
+    {% else %}
+        {% set parent_project = parent_arg_1 %}
+        {% set parent_model = parent_arg_2 %}
+        {% set parent_ref = builtins.ref(parent_project, parent_model, version=version) %}
+    {% endif %}
+    {% set current_model = this.name if this is defined else "unknown model" %}
 
     -- Return builtin ref for ephemeral models, during parsing or when disabled
     {% if execute == false or enabled == false or parent_ref.is_cte
@@ -45,13 +62,13 @@
     -- Raise error if at least one required variable is not set
     {{ upstream_prod.check_reqd_vars(prod_database, prod_schema, env_schemas, prod_database_replace) }}
 
-    {% set selected = upstream_prod.find_selected_nodes(parent_model) %}
+    {% set selected = upstream_prod.find_selected_nodes(parent_model, parent_project) %}
     -- Use dev relations for models being built during the current run
     {% if parent_model in selected %}
         {{ return(parent_ref) }}
     -- Try deferring to prod for non-selected upstream models
     {% else %}
-        {% set parent_node = upstream_prod.find_model_node(parent_model, version) %}
+        {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
         
         -- Set prod schema name
         {% if parent_node.resource_type == "snapshot" %}

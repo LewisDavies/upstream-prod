@@ -58,7 +58,7 @@ The custom macro requires two small tweaks to work with the package. This is eas
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
 - `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
-- `upstream_prod_disabled_targets` is used to bypass the package is certain environments. **It is highly recommended to disable the package for prod runs**.
+- `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
 # dbt_project.yml
@@ -80,7 +80,7 @@ vars:
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
 - `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
-- `upstream_prod_disabled_targets` is used to bypass the package is certain environments. **It is highly recommended to disable the package for prod runs**.
+- `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
 # dbt_project.yml
@@ -120,7 +120,7 @@ The custom macro requires two small tweaks to work with the package. This is eas
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
 - `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
-- `upstream_prod_disabled_targets` is used to bypass the package is certain environments. **It is highly recommended to disable the package for prod runs**.
+- `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
 # dbt_project.yml
@@ -160,7 +160,7 @@ Setting `upstream_prod_database_replace: [dev, prod]` would allow the package to
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
 - `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
-- `upstream_prod_disabled_targets` is used to bypass the package is certain environments. **It is highly recommended to disable the package for prod runs**.
+- `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
 # dbt_project.yml

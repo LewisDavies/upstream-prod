@@ -89,6 +89,9 @@
         {% set prod_exists = prod_rel is not none %}
         {% set dev_exists = dev_rel is not none %}
 
+        -- Default to returning the prod relation, but override in the circumstances outlined below
+        {% set return_rel = prod_rel %}
+
         {% if prod_exists == true %}
             -- When option enabled, return the mostly recently updated of dev & prod relations
             {% if prefer_recent == true and dev_exists == true %}
@@ -96,25 +99,29 @@
                 {% set dev_updated = upstream_prod.get_table_update_ts(dev_rel) %}
                 {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
 
+                -- Return dev relation if it exists and is fresher than prod
                 {% if dev_updated > prod_updated %}
                     {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
-                    {{ return(dev_rel) }}
-                {% else %}
-                    {{ return(prod_rel) }}
+                    {% set return_rel = dev_rel %}
                 {% endif %}
-            {% else %}
-                {{ return(prod_rel) }}
             {% endif %}
         {% elif dev_exists %}
-            -- Return dev relation if prod doesn't exist & option is enabled
+            -- Return dev relation if prod doesn't exist & fallback is enabled
             {% if fallback == true %}
                 {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
-                {{ return(dev_rel) }}
+                {% set return_rel = dev_rel %}
             {% else %}
                 {{ upstream_prod.raise_ref_not_found_error(current_model, parent_ref.database, parent_ref.schema, parent_ref.identifier) }}
             {% endif %}
         {% else %}
             {{ upstream_prod.raise_ref_not_found_error(current_model, parent_database, parent_schema, prod_rel_name) }}
+        {% endif %}
+
+        -- Adjust output if --empty flag was used
+        {% if flags.EMPTY %}
+            {{ return("(select * from " ~ return_rel ~ " where false limit 0)") }}
+        {% else %}
+            {{ return(return_rel) }}
         {% endif %}
 
     {% endif %}

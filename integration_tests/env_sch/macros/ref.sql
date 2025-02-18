@@ -1,6 +1,7 @@
 {% macro ref(
-    parent_model, 
-    prod_database=var("upstream_prod_database", None), 
+    parent_arg_1,
+    parent_arg_2=None,
+    prod_database=var("upstream_prod_database", None),
     prod_schema=var("upstream_prod_schema", None),
     enabled=var("upstream_prod_enabled", True),
     fallback=var("upstream_prod_fallback", False),
@@ -10,6 +11,17 @@
     prod_database_replace=var("upstream_prod_database_replace", None)
 ) %}
 
-    {% do return(upstream_prod.ref(parent_model, prod_database, prod_schema, enabled, fallback, env_schemas, version)) %}
+    {% do return(upstream_prod.ref(
+        parent_arg_1,
+        parent_arg_2,
+        prod_database,
+        prod_schema,
+        enabled,
+        fallback,
+        env_schemas,
+        version,
+        prefer_recent,
+        prod_database_replace
+    )) %}
 
 {% endmacro %}

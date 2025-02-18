@@ -1,6 +1,44 @@
 version: 2
 
 models:
+  - name: cross_project
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              values: ['prod']
+      - name: source_database
+        tests:
+          - accepted_values:
+              values: ['upstream__prod_db']
+      - name: source_schema
+        tests:
+          - accepted_values:
+              values: ['stg']
+      - name: source_model
+        tests:
+          - accepted_values:
+              values: ['stg__cross_project']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_database
+        tests:
+          - accepted_values:
+              values: ['upstream__dev_db']
+      - name: this_schema
+        tests:
+          - accepted_values:
+              values: ['dev']
+      - name: this_model
+        tests:
+          - accepted_values:
+              values: ['cross_project']
+
+
   - name: defer_prod_two_arg
     columns:
       # Source

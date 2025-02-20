@@ -11,8 +11,8 @@ In a typical project, prod and dev models are materialised in [separate environm
 ### ⚠️ Breaking changes in version `0.9.0`
 
 If upgrading from an earlier version:
-- Your `ref` macro *must* be updated by copying the relevant example from the setup guide below.
-- Projects using the deprecated `upstream_prod_database_replace` variable should use `upstream_prod_env_dbs` instead.
+- Your `ref` macro *must* be updated by copying [this example](#4-create-a-custom-ref-macro).
+- Projects using the deprecated `upstream_prod_database_replace` variable should follow the setup guide to use `upstream_prod_env_dbs` instead.
 
 ## Setup
 

@@ -8,7 +8,7 @@
     env_schemas=var("upstream_prod_env_schemas", False),
     version=None,
     prefer_recent=var("upstream_prod_prefer_recent", False),
-    prod_database_replace=var("upstream_prod_database_replace", None)
+    env_dbs=var("upstream_prod_env_dbs", False)
 ) %}
     {{ return(adapter.dispatch("ref", "upstream_prod")(
         parent_arg_1, 
@@ -20,7 +20,7 @@
         env_schemas, 
         version, 
         prefer_recent, 
-        prod_database_replace
+        env_dbs
     )) }}
 {% endmacro %}
 
@@ -34,14 +34,15 @@
     env_schemas, 
     version, 
     prefer_recent,
-    prod_database_replace
+    env_dbs
 ) %}
-    /* Handle two-argument refs
+    /***************
+    Handle two-argument refs
 
     For packages, the project name is the name of the package, e.g. model.facebook_ads.facebook_ads__account_report,
     so we can't simply use the user's project name when one isn't supplied. Instead we will match on just the model
     name - not project + model name - when only one arg (the model name) is supplied.
-    */
+    ***************/
     {% if parent_arg_2 is none %}
         {% set parent_project = None %}
         {% set parent_model = parent_arg_1 %}
@@ -60,13 +61,13 @@
     {% endif %}
 
     -- Raise error if at least one required variable is not set
-    {{ upstream_prod.check_reqd_vars(prod_database, prod_schema, env_schemas, prod_database_replace) }}
+    {{ upstream_prod.check_reqd_vars(prod_database, prod_schema, env_schemas, env_dbs) }}
 
     {% set selected = upstream_prod.find_selected_nodes(parent_model, parent_project) %}
     -- Use dev relations for models being built during the current run
     {% if parent_model in selected %}
         {{ return(parent_ref) }}
-    -- Try deferring to prod for non-selected upstream models
+    -- Find prod version of parent ref
     {% else %}
         {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
         
@@ -75,6 +76,7 @@
             -- Snapshots use the same schema name regardless of the environment
             {% set parent_schema = parent_node.schema %}
         {% elif env_schemas == true %}
+            -- Schema generated with custom macro
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
         {% elif prod_schema is none %}
@@ -86,14 +88,16 @@
         {% endif %}
 
         -- Set prod database name
-        {% if prod_database_replace is not none %}
-            {% set parent_database = parent_ref.database.replace(prod_database_replace[0], prod_database_replace[1]) %}
+        {% if env_dbs == true %}
+            -- Database generated with custom macro
+            {% set parent_database = generate_database_name(prod_database, parent_node, True) | trim %}
         {% else %}
             {% set parent_database = prod_database or parent_ref.database %}
         {% endif %}
 
-        -- Check whether the relations have been materialised in both envs
         /***************
+        Check whether the relations have been materialised in both envs
+        
         prod_rel_name helps the package find the correct prod relation for projects using a custom 
         generate_alias_name macro. It assumes that custom aliases are only used in dev envs and prod
         relations always have the same name as the model (+ version suffix when needed).

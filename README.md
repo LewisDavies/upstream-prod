@@ -8,7 +8,11 @@ In a typical project, prod and dev models are materialised in [separate environm
 
 `upstream-prod` solves this by intelligently redirecting `ref`s to prod outputs. It is highly adaptable and can be used whether your environments are in separate schemas, databases, or a combination of both. On most warehouses it can even compare dev and prod outputs and use the most recently-updated relation.
 
-> ⚠️ Setup instructions changed in version `0.8.0` - you'll need to update your `ref` macro if upgrading from an earlier version.
+### ⚠️ Breaking changes in version `0.9.0`
+
+If upgrading from an earlier version:
+- Your `ref` macro *must* be updated by copying the relevant example from the setup guide below.
+- Projects using the deprecated `upstream_prod_database_replace` variable should use `upstream_prod_env_dbs` instead.
 
 ## Setup
 
@@ -37,19 +41,25 @@ Your platform may use a different term, such as _catalog_ on Databricks or _proj
 <details><summary>Setup A</summary>
 <br/>
 
-The custom macro requires two small tweaks to work with the package. This is easiest to explain with an example, so here is how to modify the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60).
+Your custom schema macro needs two small tweaks to work with the package. As an example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
 {% macro generate_schema_name(custom_schema_name, node, is_upstream_prod=False) -%}
+
     {%- set default_schema = target.schema -%}
     -- 2. In the clause that generates your prod schema names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
     {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
+
         {{ custom_schema_name | trim }}
+
     {%- else -%}
+
         {{ default_schema }}
+
     {%- endif -%}
+
 {%- endmacro %}
 ```
 
@@ -99,19 +109,25 @@ vars:
 <details><summary>Setup C</summary>
 <br/>
 
-The custom macro requires two small tweaks to work with the package. This is easiest to explain with an example, so here is how to modify the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60).
+Your custom schema macro needs two small tweaks to work with the package. As an example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
 {% macro generate_schema_name(custom_schema_name, node, is_upstream_prod=False) -%}
+
     {%- set default_schema = target.schema -%}
     -- 2. In the clause that generates your prod schema names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
     {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
+
         {{ custom_schema_name | trim }}
+
     {%- else -%}
+
         {{ default_schema }}
+
     {%- endif -%}
+
 {%- endmacro %}
 ```
 
@@ -135,20 +151,35 @@ vars:
     - prod
 ```
 
-<details><summary><b>Advanced: projects with multiple prod & dev databases</b></summary>
+<details><summary><b>Using a custom database macro?</b></summary>
 <br/>
 
-If you project materialises models in more than one database per env, use `upstream_prod_database_replace` instead of `upstream_prod_database`. You can then provide a two-item list with values to find and their replacement strings.
+There are two more steps if your project has a custom `generate_database_name` macro.
 
-For example, a project that materialises `models/marts` in one database and everything else in another would use 4 databases:
-- During development
-    - `models/marts` &rarr; `dev_marts_db`
-    - Everything else &rarr; `dev_stg_db`
-- In production
-    - `models/marts` &rarr; `prod_marts_db`
-    - Everything else &rarr; `prod_stg_db`
+First, add `upstream_prod_env_dbs: true` to `dbt_project.yml`.
 
-Setting `upstream_prod_database_replace: [dev, prod]` would allow the package to work with this project.
+Then update your custom database macro in exactly the same way as your schema macro. For example:
+
+```sql
+-- 1. Add an is_upstream_prod parameter that defaults to False
+{% macro generate_database_name(custom_database_name=none, node=none, is_upstream_prod=False) -%}
+
+    {%- set default_database = target.database -%}
+    -- 2. In the clause that generates your prod database names, add a check that the value is True
+    --    **Make sure to enclose the or condition in brackets**
+    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_database_name is not none -%}
+
+        {{ custom_database_name | trim }}
+
+    {%- else -%}
+
+        {{ default_database }}
+
+    {%- endif -%}
+
+{%- endmacro %}
+```
+
 </details>
 
 </details>
@@ -175,20 +206,35 @@ vars:
     - prod
 ```
 
-<details><summary><b>Advanced: projects with multiple prod & dev databases</b></summary>
+<details><summary><b>Using a custom database macro?</b></summary>
 <br/>
 
-If you project materialises models in more than one database per env, use `upstream_prod_database_replace` instead of `upstream_prod_database`. You can then provide a two-item list with values to find and their replacement strings.
+There are two more steps if your project has a custom `generate_database_name` macro.
 
-For example, a project that materialises `models/marts` in one database and everything else in another would use 4 databases:
-- During development
-    - `models/marts` &rarr; `dev_marts_db`
-    - Everything else &rarr; `dev_stg_db`
-- In production
-    - `models/marts` &rarr; `prod_marts_db`
-    - Everything else &rarr; `prod_stg_db`
+First, add `upstream_prod_env_dbs: true` to `dbt_project.yml`.
 
-Setting `upstream_prod_database_replace: [dev, prod]` would allow the package to work with this project.
+Your custom database macro now needs two small tweaks to work with the package, as shown in the example below:
+
+```sql
+-- 1. Add an is_upstream_prod parameter that defaults to False
+{% macro generate_database_name(custom_database_name=none, node=none, is_upstream_prod=False) -%}
+
+    {%- set default_database = target.database -%}
+    -- 2. In the clause that generates your prod database names, add a check that the value is True
+    --    **Make sure to enclose the or condition in brackets**
+    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_database_name is not none -%}
+
+        {{ custom_database_name | trim }}
+
+    {%- else -%}
+
+        {{ default_database }}
+
+    {%- endif -%}
+
+{%- endmacro %}
+```
+
 </details>
 
 </details>
@@ -208,7 +254,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
     env_schemas=var("upstream_prod_env_schemas", False),
     version=None,
     prefer_recent=var("upstream_prod_prefer_recent", False),
-    prod_database_replace=var("upstream_prod_database_replace", None)
+    env_dbs=var("upstream_prod_env_dbs", False)
 ) %}
 
     {% do return(upstream_prod.ref(
@@ -221,7 +267,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
         env_schemas,
         version,
         prefer_recent,
-        prod_database_replace
+        env_dbs
     )) %}
 
 {% endmacro %}

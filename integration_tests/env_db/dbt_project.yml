@@ -29,6 +29,7 @@ snapshots:
     updated_at: updated_at
 
 vars:
-  upstream_prod_database_replace: [dev, prod]
+  upstream_prod_env_dbs: true
+  upstream_prod_database: upstream__prod_db
   upstream_prod_fallback: true
   upstream_prod_prefer_recent: true

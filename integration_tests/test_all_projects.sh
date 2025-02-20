@@ -1,5 +1,5 @@
 set -e
-projects="dev_db dev_db_replace dev_db_dev_sch dev_db_env_sch dev_sch env_sch"
+projects="dev_db dev_db_dev_sch dev_db_env_sch dev_sch env_db env_sch"
 tests_dir=$(pwd)
 
 for proj in $projects

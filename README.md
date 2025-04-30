@@ -259,7 +259,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
 
     {% do return(upstream_prod.ref(
         parent_arg_1,
-        parent_arg_2=None,
+        parent_arg_2,
         prod_database,
         prod_schema,
         enabled,

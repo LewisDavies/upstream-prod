@@ -50,7 +50,7 @@ Your custom schema macro needs two small tweaks to work with the package. As an 
     {%- set default_schema = target.schema -%}
     -- 2. In the clause that generates your prod schema names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
-    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
+    {%- if (target.name == "prod" or is_upstream_prod is true) and custom_schema_name is not none -%}
 
         {{ custom_schema_name | trim }}
 
@@ -118,7 +118,7 @@ Your custom schema macro needs two small tweaks to work with the package. As an 
     {%- set default_schema = target.schema -%}
     -- 2. In the clause that generates your prod schema names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
-    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_schema_name is not none -%}
+    {%- if (target.name == "prod" or is_upstream_prod is true) and custom_schema_name is not none -%}
 
         {{ custom_schema_name | trim }}
 
@@ -167,7 +167,7 @@ Then update your custom database macro in exactly the same way as your schema ma
     {%- set default_database = target.database -%}
     -- 2. In the clause that generates your prod database names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
-    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_database_name is not none -%}
+    {%- if (target.name == "prod" or is_upstream_prod is true) and custom_database_name is not none -%}
 
         {{ custom_database_name | trim }}
 
@@ -222,7 +222,7 @@ Your custom database macro now needs two small tweaks to work with the package, 
     {%- set default_database = target.database -%}
     -- 2. In the clause that generates your prod database names, add a check that the value is True
     --    **Make sure to enclose the or condition in brackets**
-    {%- if (target.name == "prod" or is_upstream_prod == true) and custom_database_name is not none -%}
+    {%- if (target.name == "prod" or is_upstream_prod is true) and custom_database_name is not none -%}
 
         {{ custom_database_name | trim }}
 

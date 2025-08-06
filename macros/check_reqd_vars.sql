@@ -8,8 +8,8 @@
     {% 
         if prod_database is none 
         and prod_schema is none 
-        and env_schemas == false
-        and env_dbs == false
+        and env_schemas is false
+        and env_dbs is false
     %}
         {% set error_msg -%}
 upstream_prod is enabled but at least one required variable is missing.
@@ -25,7 +25,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
     {% endif %}
 
     -- The env_dbs option also needs the prod db name to work properly
-    {% if env_dbs == true and prod_database is none %}
+    {% if env_dbs is true and prod_database is none %}
         {% set error_msg -%}
 upstream_prod_env_dbs is set to true but the production database name was not provided.
 Please use the upstream_prod_database variable to set the database name.

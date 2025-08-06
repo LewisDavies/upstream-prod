@@ -4,7 +4,7 @@
 
 {% macro default__find_model_node(model, project, version) %}
 
-    {% if execute == true %}
+    {% if execute is true %}
         {% set matching_nodes = [] %}
         {% for n in graph.nodes.values() if n["name"] == model %}
             {% if project is none or project == n["package_name"] %}

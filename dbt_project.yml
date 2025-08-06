@@ -1,12 +1,12 @@
-name: 'upstream_prod'
-version: '0.9.0'
+name: "upstream_prod"
+version: "0.9.1"
 config-version: 2
 
 require-dbt-version: [">=1.5.0", "<2.0.0"]
 
 macro-paths: ["macros"]
 
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
+target-path: "target" # directory which will store compiled SQL files
+clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"

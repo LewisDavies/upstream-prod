@@ -42,16 +42,6 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
         {{ return(None) }}
     {% endif %}
 
-    {% set result = run_query(table_info_query) %}
-    {% if result | length == 0 %}
-        {{ return(None) }}
-    {% elif result | length > 1 %}
-        {% set error_msg %}
-Multiple matches in information schema for {{ relation }}
-        {% endset %}
-        {% do exceptions.raise_compiler_error(error_msg) %}
-    {% else %}
-        {{ return(result.rows.values()[0][0] ) }}
-    {% endif %}
+    {{ return(dbt_utils.get_single_value(table_info_query, None)) }}
 
 {% endmacro %}

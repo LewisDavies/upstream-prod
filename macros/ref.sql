@@ -55,8 +55,12 @@
     {% set current_model = this.name if this is defined else "unknown model" %}
 
     -- Return builtin ref for ephemeral models, during parsing or when disabled
-    {% if execute is false or enabled is false or parent_ref.is_cte
-        or target.name in var("upstream_prod_disabled_targets", []) %}
+    {% if execute is false
+        or enabled is false
+        or parent_ref.is_cte
+        or target.name in var("upstream_prod_disabled_targets", [])
+        or flags.WHICH == "compile"
+    %}
         {{ return(parent_ref) }}
     {% endif %}
 

@@ -55,8 +55,12 @@
     {% set current_model = this.name if this is defined else "unknown model" %}
 
     -- Return builtin ref for ephemeral models, during parsing or when disabled
-    {% if execute == false or enabled == false or parent_ref.is_cte
-        or target.name in var("upstream_prod_disabled_targets", []) %}
+    {% if execute is false
+        or enabled is false
+        or parent_ref.is_cte
+        or target.name in var("upstream_prod_disabled_targets", [])
+        or flags.WHICH == "compile"
+    %}
         {{ return(parent_ref) }}
     {% endif %}
 
@@ -75,7 +79,7 @@
         {% if parent_node.resource_type == "snapshot" %}
             -- Snapshots use the same schema name regardless of the environment
             {% set parent_schema = parent_node.schema %}
-        {% elif env_schemas == true %}
+        {% elif env_schemas is true %}
             -- Schema generated with custom macro
             {% set custom_schema_name = parent_node.config.schema %}
             {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
@@ -88,7 +92,7 @@
         {% endif %}
 
         -- Set prod database name
-        {% if env_dbs == true %}
+        {% if env_dbs is true %}
             -- Database generated with custom macro
             {% set parent_database = generate_database_name(prod_database, parent_node, True) | trim %}
         {% else %}
@@ -113,9 +117,9 @@
         -- Default to returning the prod relation, but override in the circumstances outlined below
         {% set return_rel = prod_rel %}
 
-        {% if prod_exists == true %}
+        {% if prod_exists is true %}
             -- When option enabled, return the mostly recently updated of dev & prod relations
-            {% if prefer_recent == true and dev_exists == true %}
+            {% if prefer_recent is true and dev_exists is true %}
                 -- Find when dev & prod relations were last updated
                 {% set dev_updated = upstream_prod.get_table_update_ts(dev_rel) %}
                 {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
@@ -128,7 +132,7 @@
             {% endif %}
         {% elif dev_exists %}
             -- Return dev relation if prod doesn't exist & fallback is enabled
-            {% if fallback == true %}
+            {% if fallback is true %}
                 {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
                 {% set return_rel = dev_rel %}
             {% else %}

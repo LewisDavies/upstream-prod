@@ -1,0 +1,45 @@
+name: 'upstream_prod_integration_tests'
+version: '1.0.0'
+config-version: 2
+
+profile: 'upstream_prod_db_sch'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+models:
+  upstream_prod_integration_tests:
+    marts:
+      +schema: marts
+    staging:
+      +schema: stg
+
+snapshots:
+  upstream_prod_integration_tests:
+    target_schema: snapshots
+    unique_key: id
+    strategy: timestamp
+    updated_at: updated_at
+
+vars:
+  # Package config
+  upstream_prod_database: upstream__prod_db
+  upstream_prod_schema: prod
+  upstream_prod_fallback: true
+  upstream_prod_prefer_recent: true
+  
+  # Expected test output
+  prod_target: prod
+  prod_database: upstream__prod_db
+  prod_stg_schema: prod_stg
+  dev_target: dev
+  dev_database: upstream__dev_db
+  dev_marts_schema: dev_marts
+  dev_stg_schema: dev_stg

@@ -1,0 +1,46 @@
+# Snowflake example
+upstream_prod_db:
+  outputs:
+    dev: &sf-config
+      type: snowflake
+      account: '{{ env_var(''UP_SF_ACCOUNT'') }}'
+      user: '{{ env_var(''UP_SF_USER'') }}'
+      role: '{{ env_var(''UP_SF_ROLE'') }}'
+      password: '{{ env_var(''UP_SF_PASSWORD'') }}'
+
+      warehouse: '{{ env_var(''UP_SF_WAREHOUSE'') }}'
+      database: upstream__dev_db
+      schema: prod
+
+      threads: 8
+      client_session_keep_alive: false
+      reuse_connections: true
+    prod:
+      <<: *sf-config
+      database: upstream__prod_db
+      schema: prod
+  target: dev
+
+upstream_prod_db_sch:
+  outputs:
+    dev:
+      <<: *sf-config
+      database: upstream__dev_db
+      schema: dev
+    prod:
+      <<: *sf-config
+      database: upstream__prod_db
+      schema: prod
+  target: dev
+
+upstream_prod_sch:
+  outputs:
+    dev:
+      <<: *sf-config
+      database: upstream__prod_db
+      schema: dev
+    prod:
+      <<: *sf-config
+      database: upstream__prod_db
+      schema: prod
+  target: dev

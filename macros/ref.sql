@@ -75,9 +75,13 @@
     {% else %}
         {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
         
+        -- Check dbt version to account for changes to snapshot behaviour
+        {% set major_vers, minor_vers, _ = dbt_version.split(".") %}
+        {% set is_pre_1_9 = major_vers | int <= 1 and minor_vers | int <= 8 %}
+        
         -- Set prod schema name
-        {% if parent_node.resource_type == "snapshot" %}
-            -- Snapshots use the same schema name regardless of the environment
+        {% if parent_node.resource_type == "snapshot" and is_pre_1_9 is true %}
+            -- Before dbt v1.9 snapshots used the same schema name regardless of the environment
             {% set parent_schema = parent_node.schema %}
         {% elif env_schemas is true %}
             -- Schema generated with custom macro

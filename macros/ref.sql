@@ -76,8 +76,10 @@
         {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
         
         -- Set prod schema name
-        {% if parent_node.resource_type == "snapshot" %}
-            -- Snapshots use the same schema name regardless of the environment
+        {% if parent_node.resource_type == "snapshot" and parent_node.config.target_schema is not none %}
+            -- When target_schema is set the schema name is the same regardless of the environment.
+            -- It is optional as of dbt v1.9. If it isn't set, the generate_schema_name macro is used
+            -- in the same way as for models.
             {% set parent_schema = parent_node.schema %}
         {% elif env_schemas is true %}
             -- Schema generated with custom macro

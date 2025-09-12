@@ -3,5 +3,6 @@ target/
 dbt_packages/
 logs/
 .venv
-
 .DS_Store
+integration_tests/dbt_project.yml
+dbt_internal_packages/

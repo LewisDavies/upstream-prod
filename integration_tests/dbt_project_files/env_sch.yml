@@ -7,9 +7,7 @@ profile: 'upstream_prod_sch'
 model-paths: ["models"]
 test-paths: ["tests"]
 macro-paths: ["macros"]
-
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "dbt_packages"
 
@@ -23,10 +21,10 @@ models:
 
 snapshots:
   upstream_prod_integration_tests:
-    target_schema: snapshots
-    unique_key: id
-    strategy: timestamp
-    updated_at: updated_at
+    +schema: snapshots
+    +unique_key: id
+    +strategy: timestamp
+    +updated_at: updated_at
 
 vars:
   # Package config
@@ -38,7 +36,11 @@ vars:
   prod_target: prod
   prod_database: upstream__prod_db
   prod_stg_schema: stg
+  prod_snapshots_schema: snapshots
   dev_target: dev
   dev_database: upstream__prod_db
   dev_marts_schema: dev
   dev_stg_schema: dev
+
+flags:
+  require_generic_test_arguments_property: true

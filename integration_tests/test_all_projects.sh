@@ -9,5 +9,4 @@ do
     echo "#### TESTING NEW PROJECT"
     echo "#### $file"
     sh run_tests.sh
-    rm dbt_project.yml
 done

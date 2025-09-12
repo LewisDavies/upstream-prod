@@ -1,7 +1,7 @@
 packages:
   - local: ../
     name: upstream_prod
-  - local: import_project
+  - local: ./import_project
     name: import_project
   - name: codegen
     package: dbt-labs/codegen
@@ -9,4 +9,4 @@ packages:
   - name: dbt_utils
     package: dbt-labs/dbt_utils
     version: 1.3.0
-sha1_hash: bdf358da8d8483b9a138977aa686457e0c45e506
+sha1_hash: 85a0de50ca6fb0783507c0eaf2311470146302fb

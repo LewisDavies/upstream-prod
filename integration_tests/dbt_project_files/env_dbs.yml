@@ -2,7 +2,7 @@ name: 'upstream_prod_integration_tests'
 version: '1.0.0'
 config-version: 2
 
-profile: 'upstream_prod_db'
+profile: 'upstream_prod_db_{{ env_var("UP_TARGET_PLATFORM") }}'
 
 model-paths: ["models"]
 test-paths: ["tests"]

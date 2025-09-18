@@ -13,7 +13,7 @@ models:
       - name: source_model
         data_type: string
       - name: col_to_remove
-        data_type: int
+        data_type: string
     versions:
       - v: 1
       - v: 2
@@ -21,4 +21,4 @@ models:
           - include: all
             exclude: [col_to_remove]
           - name: new_col
-            data_type: int
+            data_type: string

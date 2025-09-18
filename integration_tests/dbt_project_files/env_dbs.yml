@@ -2,7 +2,7 @@ name: 'upstream_prod_integration_tests'
 version: '1.0.0'
 config-version: 2
 
-profile: 'upstream_prod_db'
+profile: 'upstream_prod_db_{{ env_var("UP_TARGET_PLATFORM") }}'
 
 model-paths: ["models"]
 test-paths: ["tests"]
@@ -28,18 +28,18 @@ snapshots:
 
 vars:
   # Package config
-  upstream_prod_database: upstream__prod_db
+  upstream_prod_database: upproddb
   upstream_prod_env_dbs: true
   upstream_prod_fallback: true
   upstream_prod_prefer_recent: true
   
   # Expected test output
   prod_target: prod
-  prod_database: upstream__prod_db
+  prod_database: upproddb
   prod_stg_schema: prod_stg
   prod_snapshots_schema: prod_snapshots
   dev_target: dev
-  dev_database: upstream__dev_db
+  dev_database: updevdb
   dev_marts_schema: prod_marts
   dev_stg_schema: prod_stg
 

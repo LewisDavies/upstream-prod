@@ -1,0 +1,125 @@
+# Snowflake
+upstream_prod_db_sf:
+  target: dev
+  outputs:
+    dev: &sf-config
+      type: snowflake
+      account: "{{ env_var('UP_SF_ACCOUNT') }}"
+      user: "{{ env_var('UP_SF_USER') }}"
+      role: "{{ env_var('UP_SF_ROLE') }}"
+      private_key_path: "{{ env_var('UP_SF_PRIVATE_KEY_PATH') }}"
+      warehouse: "{{ env_var('UP_SF_WAREHOUSE') }}"
+      threads: 8
+      client_session_keep_alive: false
+      reuse_connections: true
+      database: updevdb
+      schema: prod
+    prod:
+      <<: *sf-config
+      database: upproddb
+      schema: prod
+
+upstream_prod_db_sch_sf:
+  target: dev
+  outputs:
+    dev:
+      <<: *sf-config
+      database: updevdb
+      schema: dev
+    prod:
+      <<: *sf-config
+      database: upproddb
+      schema: prod
+
+upstream_prod_sch_sf:
+  target: dev
+  outputs:
+    dev:
+      <<: *sf-config
+      database: upproddb
+      schema: dev
+    prod:
+      <<: *sf-config
+      database: upproddb
+      schema: prod
+
+# Databricks
+upstream_prod_db_dbx:
+  target: dev
+  outputs:
+    dev: &dbx-config
+      type: databricks
+      host: "{{ env_var('UP_DBX_HOST') }}"
+      token: "{{ env_var('UP_DBX_TOKEN') }}"
+      http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
+      threads: 8
+      catalog: updevdb
+      schema: prod
+    prod:
+      <<: *dbx-config
+      catalog: upproddb
+      schema: prod
+
+upstream_prod_db_sch_dbx:
+  target: dev
+  outputs:
+    dev:
+      <<: *dbx-config
+      catalog: updevdb
+      schema: dev
+    prod:
+      <<: *dbx-config
+      catalog: upproddb
+      schema: prod
+
+upstream_prod_sch_dbx:
+  target: dev
+  outputs:
+    dev:
+      <<: *dbx-config
+      catalog: upproddb
+      schema: dev
+    prod:
+      <<: *dbx-config
+      catalog: upproddb
+      schema: prod
+
+# BigQuery
+upstream_prod_db_bq:
+  target: dev
+  outputs:
+    dev: &bq-config
+      type: bigquery
+      method: service-account
+      project: updevdb
+      dataset: prod
+      threads: 8
+      keyfile: "{{ env_var('UP_BQ_KEYFILE') }}"
+    prod:
+      <<: *bq-config
+      project: upproddb
+      dataset: prod
+
+upstream_prod_db_sch_bq:
+  target: dev
+  outputs:
+    dev:
+      <<: *bq-config
+      project: updevdb
+      dataset: dev
+    prod:
+      <<: *bq-config
+      project: upproddb
+      dataset: prod
+
+upstream_prod_sch_bq:
+  target: dev
+  outputs:
+    dev:
+      <<: *bq-config
+      project: upproddb
+      dataset: dev
+    prod:
+      <<: *bq-config
+      project: upproddb
+      dataset: prod

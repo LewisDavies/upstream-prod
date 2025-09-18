@@ -34,11 +34,11 @@ vars:
   
   # Expected test output
   prod_target: prod
-  prod_database: upstream__prod_db
+  prod_database: upproddb
   prod_stg_schema: stg
   prod_snapshots_schema: snapshots
   dev_target: dev
-  dev_database: upstream__prod_db
+  dev_database: upproddb
   dev_marts_schema: dev
   dev_stg_schema: dev
 

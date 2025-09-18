@@ -5,8 +5,8 @@ echo "## SETTING UP ENVIRONMENT"
 echo ""
 dbt clean
 dbt deps
-dbt run-operation create_test_db --args '{db: upstream__prod_db}'
-dbt run-operation create_test_db --args '{db: upstream__dev_db}'
+dbt run-operation create_test_db --args '{db: upproddb}'
+dbt run-operation create_test_db --args '{db: updevdb}'
 
 # Create staging models in appropriate envs
 echo ""

@@ -12,11 +12,11 @@ upstream_prod_db_sf:
       threads: 8
       client_session_keep_alive: false
       reuse_connections: true
-      database: upstream__dev_db
+      database: updevdb
       schema: prod
     prod:
       <<: *sf-config
-      database: upstream__prod_db
+      database: upproddb
       schema: prod
 
 upstream_prod_db_sch_sf:
@@ -24,11 +24,11 @@ upstream_prod_db_sch_sf:
   outputs:
     dev:
       <<: *sf-config
-      database: upstream__dev_db
+      database: updevdb
       schema: dev
     prod:
       <<: *sf-config
-      database: upstream__prod_db
+      database: upproddb
       schema: prod
 
 upstream_prod_sch_sf:
@@ -36,11 +36,11 @@ upstream_prod_sch_sf:
   outputs:
     dev:
       <<: *sf-config
-      database: upstream__prod_db
+      database: upproddb
       schema: dev
     prod:
       <<: *sf-config
-      database: upstream__prod_db
+      database: upproddb
       schema: prod
 
 # Databricks
@@ -53,11 +53,11 @@ upstream_prod_db_dbx:
       token: "{{ env_var('UP_DBX_TOKEN') }}"
       http_path: "{{ env_var('UP_DBX_HTTP_PATH') }}"
       threads: 8
-      catalog: upstream__dev_db
+      catalog: updevdb
       schema: prod
     prod:
       <<: *dbx-config
-      catalog: upstream__prod_db
+      catalog: upproddb
       schema: prod
 
 upstream_prod_db_sch_dbx:
@@ -65,11 +65,11 @@ upstream_prod_db_sch_dbx:
   outputs:
     dev:
       <<: *dbx-config
-      catalog: upstream__dev_db
+      catalog: updevdb
       schema: dev
     prod:
       <<: *dbx-config
-      catalog: upstream__prod_db
+      catalog: upproddb
       schema: prod
 
 upstream_prod_sch_dbx:
@@ -77,11 +77,11 @@ upstream_prod_sch_dbx:
   outputs:
     dev:
       <<: *dbx-config
-      catalog: upstream__prod_db
+      catalog: upproddb
       schema: dev
     prod:
       <<: *dbx-config
-      catalog: upstream__prod_db
+      catalog: upproddb
       schema: prod
 
 # BigQuery

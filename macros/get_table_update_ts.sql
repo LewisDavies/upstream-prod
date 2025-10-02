@@ -24,8 +24,8 @@
                     inf_sch.creation_time
                 ) as last_altered
             from
-                {{ relation.database }}.{{ relation.schema }}.INFORMATION_SCHEMA.TABLES inf_sch
-                left join {{ relation.database }}.{{ relation.schema }}.__TABLES__ meta
+                `{{ relation.database }}.{{ relation.schema }}.INFORMATION_SCHEMA.TABLES` inf_sch
+                left join `{{ relation.database }}.{{ relation.schema }}.__TABLES__` meta
                     on inf_sch.table_catalog = meta.project_id
                     and inf_sch.table_schema = meta.dataset_id
                     and inf_sch.table_name = meta.table_id

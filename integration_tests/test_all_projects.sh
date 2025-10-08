@@ -1,4 +1,9 @@
+# Stop the script when any errors are returned
 set -e
+
+# Change to directory the script is in
+script_dir=$(dirname "$(readlink -f "$0")")
+cd $script_dir
 
 for platform in sf dbx bq
 do

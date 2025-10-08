@@ -16,7 +16,7 @@ If upgrading from an earlier version:
 
 ## Setup
 
-> ℹ️ If you need help setting up the package, please create an issue or tag / DM @LewisDavies on dbt's Slack.
+> ℹ️ If you need help setting up the package, please create an issue or tag / DM @LewisDavies on the dbt Slack.
 
 The package relies on a few variables that indicate where prod data is avaiable. The exact requirements depend on your setup; use the questions below to find the correct variables for your project. 
 

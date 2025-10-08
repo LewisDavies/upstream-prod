@@ -2,7 +2,6 @@ version: 2
 
 models:
   - name: stg__defer_vers
-    contract: {enforced: true}
     columns:
       - name: source_target
         data_type: string
@@ -22,3 +21,5 @@ models:
             exclude: [col_to_remove]
           - name: new_col
             data_type: string
+    config:
+      contract: {enforced: true}

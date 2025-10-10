@@ -116,6 +116,12 @@ models:
           - accepted_values:
               arguments:
                 values: ['stg__defer_prod']
+          # This specific model has a relationship test because the upstream model is materialised
+          # in prod, not dev
+          - relationships:
+              arguments:
+                to: ref("stg__defer_prod")
+                field: source_model
       # This
       - name: this_target
         tests:

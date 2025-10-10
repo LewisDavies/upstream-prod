@@ -10,11 +10,11 @@ dbt run-operation create_test_db --args '{db: updevdb}'
 
 # Create staging models in appropriate envs
 echo ""
-echo "## BUILDING STAGING MODELS"
+echo "## RUNNING STAGING MODELS"
 echo ""
-dbt snapshot --target prod
-dbt build -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project --target prod
-dbt build -s stg__dev_fallback stg__dev_newer
+dbt snapshot -t prod
+dbt run -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project -t prod
+dbt run -s stg__dev_fallback stg__dev_newer
 
 # Build & test downstream models
 echo ""

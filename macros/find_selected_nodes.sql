@@ -24,6 +24,9 @@
     Example: my_model has a relationship test against my_stg_model and dbt test -s my_model is run.
     As my_model was explicitly selected by the user, the dev relation is used as the base and is
     compared to the prod version of my_stg_model.
+
+    Note: when a singular test contains more than one ref, the dev version of both will be selected
+    because there isn't a bulletproof way of determining the "main" ref in a singular test.
     *******************/
 
     -- Find models & snapshots selected for current run
@@ -46,15 +49,27 @@
     -- Find models being tested
     {% for test in selected_tests %}
         {% set test_node = graph.nodes[test] %}
-        {% for test_ref in test_node.refs %}
-            {% if test_ref.name == parent_model %}
-                {% if parent_project is none %}
-                    {% do selected.append(parent_model) %}
-                {% elif test_ref.package == parent_project %}
-                    {% do selected.append(parent_project ~ "." ~ parent_model) %}
-                {% endif %}
+        -- Generic tests always have a value indicating the primary model they're associated with.
+        -- Using this means tests linked to multiple models, e.g. relationship tests, can use dev
+        -- for the main model while deferring to prod for secondary refs.
+        {% if test_node.get("attached_node") is not none %}
+            {% if parent_project is none %}
+                {% do selected.append(test_node.attached_node.split(".")[2]) %}
+            {% else %}
+                {% do selected.append(test_node.attached_node.partition(".")[2]) %}
             {% endif %}
-        {% endfor %}
+        -- This branch should only be needed when finding refs in singular tests
+        {% else %}
+            {% for test_ref in test_node.refs %}
+                {% if test_ref.name == parent_model %}
+                    {% if parent_project is none %}
+                        {% do selected.append(parent_model) %}
+                    {% elif test_ref.package == parent_project %}
+                        {% do selected.append(parent_project ~ "." ~ parent_model) %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     {% endfor %}
 
     {{ return(set(selected)) }}

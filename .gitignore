@@ -7,3 +7,4 @@ logs/
 integration_tests/dbt_project.yml
 dbt_internal_packages/
 .user.yml
+.envrc

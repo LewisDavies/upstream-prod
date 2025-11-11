@@ -59,7 +59,6 @@
         or enabled is false
         or parent_ref.is_cte
         or target.name in var("upstream_prod_disabled_targets", [])
-        or flags.WHICH == "compile"
     %}
         {{ return(parent_ref) }}
     {% endif %}

@@ -36,7 +36,7 @@
                 {% do selected.append(res.split(".")[2]) %}
             -- Get project.model when ref had two args
             {% else %}
-                {% do selected.append(res.partition(".")[2]) %}
+                {% do selected.append(res.split(".", 1)[1] if "." in res else "") %}
             {% endif %}
         {% else %}
             {% do selected_tests.append(res) %}

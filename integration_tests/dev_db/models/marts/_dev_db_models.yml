@@ -7,36 +7,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__cross_project']
+              arguments:
+                values: ['stg__cross_project']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['cross_project']
+              arguments:
+                values: ['cross_project']
 
 
   - name: defer_prod_two_arg
@@ -45,36 +53,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__defer_prod']
+              arguments:
+                values: ['stg__defer_prod']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['defer_prod_two_arg']
+              arguments:
+                values: ['defer_prod_two_arg']
 
   
   - name: defer_prod
@@ -83,36 +99,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__defer_prod']
+              arguments:
+                values: ['stg__defer_prod']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['defer_prod']
+              arguments:
+                values: ['defer_prod']
 
 
   - name: defer_vers_new
@@ -121,40 +145,49 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__defer_vers_v2']
+              arguments:
+                values: ['stg__defer_vers_v2']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['defer_vers_new']
+              arguments:
+                values: ['defer_vers_new']
       - name: new_col
         tests:
           - accepted_values:
-              values: [2]
+              arguments:
+                values: [2]
 
 
   - name: defer_vers_old
@@ -163,40 +196,49 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__defer_vers_v1']
+              arguments:
+                values: ['stg__defer_vers_v1']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['defer_vers_old']
+              arguments:
+                values: ['defer_vers_old']
       - name: col_to_remove
         tests:
           - accepted_values:
-              values: [1]
+              arguments:
+                values: [1]
 
 
   - name: dev_fallback
@@ -205,36 +247,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__dev_fallback']
+              arguments:
+                values: ['stg__dev_fallback']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['dev_fallback']
+              arguments:
+                values: ['dev_fallback']
 
 
   - name: dev_newer
@@ -243,36 +293,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__dev_newer']
+              arguments:
+                values: ['stg__dev_newer']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['dev_newer']
+              arguments:
+                values: ['dev_newer']
 
 
   - name: ephem
@@ -281,36 +339,44 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['prod_stg']
+              arguments:
+                values: ['prod_stg']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['stg__ephem']
+              arguments:
+                values: ['stg__ephem']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['ephem']
+              arguments:
+                values: ['ephem']
 
 
   - name: snapshot_example
@@ -319,33 +385,41 @@ models:
       - name: source_target
         tests:
           - accepted_values:
-              values: ['prod']
+              arguments:
+                values: ['prod']
       - name: source_database
         tests:
           - accepted_values:
-              values: ['upstream__prod_db']
+              arguments:
+                values: ['upstream__prod_db']
       - name: source_schema
         tests:
           - accepted_values:
-              values: ['snapshots']
+              arguments:
+                values: ['snapshots']
       - name: source_model
         tests:
           - accepted_values:
-              values: ['snp__example']
+              arguments:
+                values: ['snp__example']
       # This
       - name: this_target
         tests:
           - accepted_values:
-              values: ['dev']
+              arguments:
+                values: ['dev']
       - name: this_database
         tests:
           - accepted_values:
-              values: ['upstream__dev_db']
+              arguments:
+                values: ['upstream__dev_db']
       - name: this_schema
         tests:
           - accepted_values:
-              values: ['prod_marts']
+              arguments:
+                values: ['prod_marts']
       - name: this_model
         tests:
           - accepted_values:
-              values: ['snapshot_example']
+              arguments:
+                values: ['snapshot_example']

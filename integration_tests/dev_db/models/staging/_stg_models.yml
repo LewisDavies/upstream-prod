@@ -2,7 +2,8 @@ version: 2
 
 models:
   - name: stg__defer_vers
-    contract: {enforced: true}
+    config:
+      contract: {enforced: true}
     columns:
       - name: source_target
         data_type: string

@@ -1,8 +1,12 @@
 packages:
-  - local: ../../
-  - local: ../import_project
-  - package: dbt-labs/codegen
-    version: 0.9.0
-  - package: dbt-labs/dbt_utils
-    version: 1.3.0
-sha1_hash: 3d2add78eae09f6998a89786697dc5a0167d79a9
+- package: dbt-labs/codegen
+  name: codegen
+  version: 0.9.0
+- package: dbt-labs/dbt_utils
+  name: dbt_utils
+  version: 1.3.2
+- local: ../import_project
+  name: import_project
+- local: ../..
+  name: upstream_prod
+sha1_hash: 4a10b72f3fca09d4e683b1c2f18679f661dafc34

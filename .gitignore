@@ -5,3 +5,7 @@ logs/
 .venv
 
 .DS_Store
+dbt_internal_packages/
+.user.yml
+profiles.yml
+.envrc

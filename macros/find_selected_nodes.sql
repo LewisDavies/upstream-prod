@@ -39,7 +39,7 @@
                 {% do selected.append(res.split(".")[2]) %}
             -- Get project.model when ref had two args
             {% else %}
-                {% do selected.append(res.partition(".")[2]) %}
+                {% do selected.append(res.split(".", 1)[1] if "." in res else "") %}
             {% endif %}
         {% else %}
             {% do selected_tests.append(res) %}
@@ -56,7 +56,7 @@
             {% if parent_project is none %}
                 {% do selected.append(test_node.attached_node.split(".")[2]) %}
             {% else %}
-                {% do selected.append(test_node.attached_node.partition(".")[2]) %}
+                {% do selected.append(test_node.attached_node.split(".", 1)[1] if "." in test_node.attached_node else "") %}
             {% endif %}
         -- This branch should only be needed when finding refs in singular tests
         {% else %}

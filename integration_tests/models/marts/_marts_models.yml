@@ -8,17 +8,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_stg_schema") }}']
+                values: "{{ var('prod_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -29,17 +29,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -54,17 +54,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_stg_schema") }}']
+                values: "{{ var('prod_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -75,17 +75,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -100,17 +100,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_stg_schema") }}']
+                values: "{{ var('prod_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -127,17 +127,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -152,17 +152,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_stg_schema") }}']
+                values: "{{ var('prod_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -173,17 +173,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -203,17 +203,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_stg_schema") }}']
+                values: "{{ var('prod_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -224,17 +224,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -254,17 +254,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_stg_schema") }}']
+                values: "{{ var('dev_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -275,17 +275,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -300,17 +300,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_stg_schema") }}']
+                values: "{{ var('dev_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -321,17 +321,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -346,17 +346,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_stg_schema") }}']
+                values: "{{ var('dev_stg_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -367,17 +367,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:
@@ -392,17 +392,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_target") }}']
+                values: "{{ var('prod_target') }}"
       - name: source_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_database") }}']
+                values: "{{ var('prod_database') }}"
       - name: source_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("prod_snapshots_schema") }}']
+                values: "{{ var('prod_snapshots_schema') }}"
       - name: source_model
         tests:
           - accepted_values:
@@ -413,17 +413,17 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_target") }}']
+                values: "{{ var('dev_target') }}"
       - name: this_database
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_database") }}']
+                values: "{{ var('dev_database') }}"
       - name: this_schema
         tests:
           - accepted_values:
               arguments:
-                values: ['{{ var("dev_marts_schema") }}']
+                values: "{{ var('dev_marts_schema') }}"
       - name: this_model
         tests:
           - accepted_values:

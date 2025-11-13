@@ -33,14 +33,14 @@ vars:
   upstream_prod_prefer_recent: true
   
   # Expected test output
-  prod_target: prod
-  prod_database: upproddb
-  prod_stg_schema: prod_stg
-  prod_snapshots_schema: prod_snapshots
-  dev_target: dev
-  dev_database: updevdb
-  dev_marts_schema: prod_marts
-  dev_stg_schema: prod_stg
+  prod_target: ["prod"]
+  prod_database: ["upproddb"]
+  prod_stg_schema: ["prod_stg"]
+  prod_snapshots_schema: ["prod_snapshots"]
+  dev_target: ["dev"]
+  dev_database: ["updevdb"]
+  dev_marts_schema: ["prod_marts"]
+  dev_stg_schema: ["prod_stg"]
 
 flags:
   require_generic_test_arguments_property: true

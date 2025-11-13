@@ -126,7 +126,7 @@
                 {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
 
                 -- Return dev relation if it exists and is fresher than prod
-                {% if dev_updated > prod_updated %}
+                {% if dev_updated | string > prod_updated | string %}
                     {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
                     {% set return_rel = dev_rel %}
                 {% endif %}

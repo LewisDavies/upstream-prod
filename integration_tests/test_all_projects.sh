@@ -5,6 +5,8 @@ set -e
 script_dir=$(dirname "$(readlink -f "$0")")
 cd $script_dir
 
+export DBT_QUIET=true
+
 for platform in sf dbx bq
 do
     export UP_TARGET_PLATFORM=$platform
@@ -14,9 +16,8 @@ do
         cat $file > dbt_project.yml
         echo ""
         echo ""
-        echo ""
         echo "#### TESTING NEW PROJECT"
-        echo "#### $file"
+        echo "#### $file ($platform)"
         sh run_tests.sh
     done
 done

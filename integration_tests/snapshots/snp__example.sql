@@ -6,6 +6,6 @@ select
     '{{ this.schema }}' as source_schema,
     '{{ this.name }}' as source_model,
     1 as id,
-    current_timestamp as updated_at
+    cast(current_timestamp as {{ dbt.type_timestamp() }}) as updated_at
 
 {% endsnapshot %}

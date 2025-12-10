@@ -17,7 +17,8 @@ dbt run -s stg__dev_fallback stg__dev_newer
 # Build & test downstream models
 echo ""
 echo "## BUILDING DOWNSTREAM MODELS"
-dbt build -s models/marts
+# event-time flags only affect the microbatch model
+dbt build -s models/marts --event-time-start "2025-01-01" --event-time-end "2025-01-03"
 
 # Check --empty flag
 echo ""

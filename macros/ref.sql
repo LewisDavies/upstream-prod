@@ -150,9 +150,10 @@
         {% elif parent_ref.event_time_filter is not none %}
             {% set filt = parent_ref.event_time_filter %}
             {{ return(
-                "(select * from " ~ return_rel ~ " where " ~
-                filt.field_name ~ " >= cast('" ~ filt.start ~ "' as " ~ dbt.type_timestamp() ~ ") and " ~ 
-                filt.field_name ~ " < cast('" ~ filt.end ~ "' as " ~ dbt.type_timestamp() ~ "))") }}
+                "(select * from " ~ return_rel ~ " where cast(" ~
+                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") >= cast('" ~ filt.start ~ "' as " ~ dbt.type_timestamp() ~ ") and cast(" ~ 
+                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") < cast('" ~ filt.end ~ "' as " ~ dbt.type_timestamp() ~ "))"
+            ) }}
         {% else %}
             {{ return(return_rel) }}
         {% endif %}

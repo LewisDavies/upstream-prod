@@ -1,3 +1,13 @@
+{% if target.type=="bigquery" %}
+    {% set partition = {
+            "field": "activity_date",
+            "data_type": "date",
+            "granularity": "day"
+    } %}
+{% else %}
+    {% set partition = None %}
+{% endif %}
+
 {{
     config(
         materialized = "incremental",
@@ -5,9 +15,11 @@
         event_time="activity_date",
         batch_size="day",
         begin="2025-01-01",
-        partition_by="activity_date"
+        partition_by=partition
     )
 }}
+
+  
 
 select
     activity_date,

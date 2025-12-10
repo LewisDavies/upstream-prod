@@ -1,0 +1,27 @@
+{% if target.type=="bigquery" %}
+    {% set partition = {
+            "field": "activity_date",
+            "data_type": "date",
+            "granularity": "day"
+    } %}
+{% else %}
+    {% set partition = None %}
+{% endif %}
+
+{{
+    config(
+        materialized = "incremental",
+        incremental_strategy="microbatch",
+        event_time="activity_date",
+        batch_size="day",
+        begin="2025-01-01",
+        partition_by=partition
+    )
+}}
+
+  
+
+select
+    activity_date,
+    current_timestamp() as updated_at
+from {{ ref('stg__microbatch') }}

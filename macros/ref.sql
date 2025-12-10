@@ -145,7 +145,15 @@
 
         -- Adjust output if --empty flag was used
         {% if flags.EMPTY %}
-            {{ return("(select * from " ~ return_rel ~ " where false limit 0)") }}
+            {{ return("(select * from " ~ return_rel ~ " where 0=1 limit 0)") }}
+        -- Add filter for microbatch models or when --sample is used
+        {% elif parent_ref.event_time_filter is not none %}
+            {% set filt = parent_ref.event_time_filter %}
+            {{ return(
+                "(select * from " ~ return_rel ~ " where cast(" ~
+                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") >= cast('" ~ filt.start ~ "' as " ~ dbt.type_timestamp() ~ ") and cast(" ~ 
+                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") < cast('" ~ filt.end ~ "' as " ~ dbt.type_timestamp() ~ "))"
+            ) }}
         {% else %}
             {{ return(return_rel) }}
         {% endif %}

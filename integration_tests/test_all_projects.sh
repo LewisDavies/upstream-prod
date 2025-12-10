@@ -7,7 +7,7 @@ cd $script_dir
 
 export DBT_QUIET=true
 
-for platform in sf dbx bq
+for platform in bq dbx sf
 do
     export UP_TARGET_PLATFORM=$platform
 
@@ -16,6 +16,7 @@ do
         cat $file > dbt_project.yml
         echo ""
         echo ""
+        date
         echo "#### TESTING NEW PROJECT"
         echo "#### $file ($platform)"
         sh run_tests.sh

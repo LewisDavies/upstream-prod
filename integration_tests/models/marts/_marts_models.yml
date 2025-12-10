@@ -385,6 +385,18 @@ models:
                 values: ['ephem']
 
 
+  - name: microbatch
+    columns:
+      - name: activity_date
+        tests:
+          - not_null
+          - dbt_utils.not_constant
+      - name: updated_at
+        tests:
+          - not_null
+          - dbt_utils.not_constant
+
+
   - name: snapshot_example
     columns:
       # Source

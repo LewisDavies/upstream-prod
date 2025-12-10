@@ -4,7 +4,8 @@
         incremental_strategy="microbatch",
         event_time="activity_date",
         batch_size="day",
-        begin="2025-01-01"
+        begin="2025-01-01",
+        partition_by="activity_date"
     )
 }}
 

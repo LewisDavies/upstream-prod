@@ -11,7 +11,7 @@ dbt run-operation create_test_db --args '{db: updevdb}'
 echo ""
 echo "## RUNNING STAGING MODELS"
 dbt snapshot -t prod
-dbt run -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project -t prod
+dbt run -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch -t prod
 dbt run -s stg__dev_fallback stg__dev_newer
 
 # Build & test downstream models

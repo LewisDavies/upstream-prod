@@ -147,7 +147,7 @@
         {% if flags.EMPTY %}
             {{ return("(select * from " ~ return_rel ~ " where 0=1 limit 0)") }}
         -- Add filter for microbatch models or when --sample is used
-        {% elif parent_ref.event_time_filter is not none %}
+        {% elif parent_ref.event_time_filter is not none and parent_ref.event_time_filter is not undefined %}
             {% set filt = parent_ref.event_time_filter %}
             {{ return(
                 "(select * from " ~ return_rel ~ " where cast(" ~

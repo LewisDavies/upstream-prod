@@ -1,7 +1,7 @@
 /***************
-This is where the freshest relation is determined when prefer_recent is enabled.
+This is where the freshest relation is determined if prefer_recent is enabled.
 
-It originally used my own macro that only handled Snowflake, Databricks and BigQuery.
+It originally used custom queries that only handled Snowflake, Databricks and BigQuery.
 I later switched to get_relation_last_modified to add support for a wider range of adapters.
 This had the nice side effect of adding support for Hive metastore on Databricks.
 
@@ -10,11 +10,25 @@ get_relation_last_modified in 2026.
 ***************/
 
 {% macro get_table_update_ts(relation) %}
-    {{ return(adapter.dispatch("get_table_update_ts", "upstream_prod")(relation)) }}
+    -- Create run-level cache
+    {% if "_upstream_prod_ts_cache" not in graph %}
+        {% do graph.update({"_upstream_prod_ts_cache": {}}) %}
+    {% endif %}
+    
+    -- Use cached update timestamp if available
+    {% set cache_key = (relation.database ~ "." ~ relation.schema ~ "." ~ relation.identifier) | lower %}
+    {% if cache_key in graph["_upstream_prod_ts_cache"] %}
+        {{ return(graph["_upstream_prod_ts_cache"][cache_key]) }}
+    {% endif %}
+
+    -- Find & cache timestamp from information_schema (or similar)
+    {% set result = adapter.dispatch("get_table_update_ts", "upstream_prod")(relation) %}
+    {% do graph["_upstream_prod_ts_cache"].update({cache_key: result}) %}
+    {{ return(result) }}
+
 {% endmacro %}
 
 {% macro default__get_table_update_ts(relation) %}
-
     /***************
     This is the same macro used by the source freshness command. It accepts a list so
     it could technically check prod & dev in one call if both relations are in the same
@@ -30,7 +44,6 @@ get_relation_last_modified in 2026.
 {% endmacro %}
 
 {% macro bigquery__get_table_update_ts(relation) %}
-
     {% set table_info_query %}
         select
             coalesce(

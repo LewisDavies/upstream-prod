@@ -67,7 +67,7 @@ Your custom schema macro needs two small tweaks to work with the package. As an 
 
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
-- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
+- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent.
 - `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
@@ -89,7 +89,7 @@ vars:
 
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
-- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
+- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent.
 - `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
@@ -135,7 +135,7 @@ Your custom schema macro needs two small tweaks to work with the package. As an 
 
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
-- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
+- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent.
 - `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
@@ -190,7 +190,7 @@ Then update your custom database macro in exactly the same way as your schema ma
 
 Add the values below to the `vars` section of `dbt_project.yml`. Some optional variables are included to improve your experience:
 - `upstream_prod_fallback` tells the package to return your dev relation if the prod version can't be found. This is very useful when creating multiple models at the same time.
-- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent. **This is only available on Snowflake, Databricks & BigQuery.**
+- `upstream_prod_prefer_recent` compares when the prod and dev relations were last modified and returns the most recent.
 - `upstream_prod_disabled_targets` is used to bypass the package in certain environments. **It is highly recommended to disable the package for prod runs**.
 
 ```yml
@@ -320,11 +320,20 @@ Now that your dev models are using prod data, you DAG would look like this:
 ```
 
 ## Compatibility
-`upstream-prod` is built and tested on Snowflake. Based on my experience and user reports, it is known to work on:
+`upstream-prod` is built and tested on Snowflake, Databricks and BigQuery. It should also work with community-supported adapters that specify a target database or schema (or platform-specific equivalents) in `profiles.yml`.
+
+### Support for `upstream_prod_prefer_recent` setting
+
+This feature is available on any adapter that implements the `get_relation_last_modified` macro. As of January 2026 this includes:
+
 - Snowflake
 - Databricks
 - BigQuery
-- Redshift (you may need [RA3 nodes](https://aws.amazon.com/redshift/features/ra3/) for cross-database queries)
-- Azure Synapse
-
-It should also work with community-supported adapters that specify a target database or schema in `profiles.yml`.
+- Redshift
+- Fabric
+- Dremio
+- Vertica
+- Teradata
+- SingleStore
+- Exasol
+- SQL Server (pending [this pull request](https://github.com/dbt-msft/dbt-sqlserver/pull/628))

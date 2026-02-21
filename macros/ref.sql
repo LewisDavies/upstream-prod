@@ -119,9 +119,8 @@
         {% set return_rel = prod_rel %}
 
         {% if prod_exists is true %}
-            -- When option enabled, return the mostly recently updated of dev & prod relations
+            -- When option enabled, return the most recently updated relation
             {% if prefer_recent is true and dev_exists is true %}
-                -- Find when dev & prod relations were last updated
                 {% set dev_updated = upstream_prod.get_table_update_ts(dev_rel) %}
                 {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
 

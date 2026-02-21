@@ -7,7 +7,7 @@ cd $script_dir
 
 export DBT_QUIET=true
 
-for platform in bq dbx sf
+for platform in dbx bq sf
 do
     export UP_TARGET_PLATFORM=$platform
 

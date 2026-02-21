@@ -1,10 +1,13 @@
-
 target/
 dbt_packages/
+dbt_internal_packages/
 logs/
+.user.yml
+
 .venv
 .DS_Store
-integration_tests/dbt_project.yml
-dbt_internal_packages/
-.user.yml
 .envrc
+# Always a copy of one of the files in integration_tests/dbt_project_files
+integration_tests/dbt_project.yml
+# Keeps getting changed when switching between Core & Fusion
+package-lock.yml

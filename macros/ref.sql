@@ -10,32 +10,10 @@
     prefer_recent=var("upstream_prod_prefer_recent", False),
     env_dbs=var("upstream_prod_env_dbs", False)
 ) %}
-    {{ return(adapter.dispatch("ref", "upstream_prod")(
-        parent_arg_1, 
-        parent_arg_2, 
-        prod_database, 
-        prod_schema, 
-        enabled, 
-        fallback, 
-        env_schemas, 
-        version, 
-        prefer_recent, 
-        env_dbs
-    )) }}
+    {{ return(adapter.dispatch("ref", "upstream_prod")(parent_arg_1, parent_arg_2, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent, env_dbs)) }}
 {% endmacro %}
 
-{% macro default__ref(
-    parent_arg_1, 
-    parent_arg_2, 
-    prod_database, 
-    prod_schema, 
-    enabled, 
-    fallback, 
-    env_schemas, 
-    version, 
-    prefer_recent,
-    env_dbs
-) %}
+{% macro default__ref(parent_arg_1, parent_arg_2, prod_database, prod_schema, enabled, fallback, env_schemas, version, prefer_recent, env_dbs) %}
     /***************
     Handle two-argument refs
 
@@ -73,44 +51,8 @@
     -- Find prod version of parent ref
     {% else %}
         {% set parent_node = upstream_prod.find_model_node(parent_model, parent_project, version) %}
-        
-        -- Set prod schema name
-        {% if parent_node.resource_type == "snapshot" and parent_node.config.target_schema is defined and parent_node.config.target_schema is not none %}
-            -- When target_schema is set the schema name is the same regardless of the environment.
-            -- It is optional as of dbt v1.9. If it isn't set, the generate_schema_name macro is used
-            -- in the same way as for models.
-            {% set parent_schema = parent_node.schema %}
-        {% elif env_schemas is true %}
-            -- Schema generated with custom macro
-            {% set custom_schema_name = parent_node.config.schema %}
-            {% set parent_schema = generate_schema_name(custom_schema_name, parent_node, True) | trim %}
-        {% elif prod_schema is none %}
-            -- No prod_schema = one-DB-per-env setup with same schema structure in all
-            {% set parent_schema = parent_ref.schema %}
-        {% else %}
-            -- Schema structure is <env>[_<level>], e.g. prod, prod_stg or dev_int 
-            {% set parent_schema = parent_ref.schema | replace(target.schema, prod_schema) %}
-        {% endif %}
-
-        -- Set prod database name
-        {% if env_dbs is true %}
-            -- Database generated with custom macro
-            {% set parent_database = generate_database_name(prod_database, parent_node, True) | trim %}
-        {% else %}
-            {% set parent_database = prod_database or parent_ref.database %}
-        {% endif %}
-
-        /***************
-        Check whether the relations have been materialised in both envs
-        
-        prod_rel_name helps the package find the correct prod relation for projects using a custom 
-        generate_alias_name macro. It assumes that custom aliases are only used in dev envs and prod
-        relations always have the same name as the model (+ version suffix when needed).
-        It's hacky but it seems to work. 
-        ***************/
-        {% set re = modules.re %}
-        {% set prod_rel_name = re.search("\w+(?=\.)", parent_node.path).group() %}
-        {% set prod_rel = adapter.get_relation(parent_database, parent_schema, prod_rel_name) %}
+        {% set prod_rel_db, prod_rel_schema, prod_rel_name = upstream_prod.get_prod_relation(parent_node, parent_node["database"], parent_node["schema"]) %}
+        {% set prod_rel = adapter.get_relation(prod_rel_db, prod_rel_schema, prod_rel_name) %}
         {% set dev_rel = load_relation(parent_ref) %}
         {% set prod_exists = prod_rel is not none %}
         {% set dev_exists = dev_rel is not none %}
@@ -122,11 +64,11 @@
             -- When option enabled, return the mostly recently updated of dev & prod relations
             {% if prefer_recent is true and dev_exists is true %}
                 -- Find when dev & prod relations were last updated
-                {% set dev_updated = upstream_prod.get_table_update_ts(dev_rel) %}
-                {% set prod_updated = upstream_prod.get_table_update_ts(prod_rel) %}
+                {% set parent_name = parent_node["alias"] or parent_node["name"] %}
+                {% set cached_resource = graph["_upstream_prod_cache"][parent_node["package_name"] ~ "." ~ parent_name] %}
 
                 -- Return dev relation if it exists and is fresher than prod
-                {% if dev_updated | string > prod_updated | string %}
+                {% if cached_resource["dev"]["last_altered"] | string > cached_resource["prod"]["last_altered"] | string %}
                     {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
                     {% set return_rel = dev_rel %}
                 {% endif %}
@@ -137,10 +79,10 @@
                 {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " not found in prod, falling back to default target", info=True) }}
                 {% set return_rel = dev_rel %}
             {% else %}
-                {{ upstream_prod.raise_ref_not_found_error(current_model, parent_ref.database, parent_ref.schema, parent_ref.identifier) }}
+                {{ upstream_prod.raise_ref_not_found_error(current_model, parent_ref.database, parent_ref.schema, parent_ref.name) }}
             {% endif %}
         {% else %}
-            {{ upstream_prod.raise_ref_not_found_error(current_model, parent_database, parent_schema, prod_rel_name) }}
+            {{ upstream_prod.raise_ref_not_found_error(current_model, prod_rel_db, prod_rel_schema, prod_rel_name) }}
         {% endif %}
 
         -- Adjust output if --empty flag was used

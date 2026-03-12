@@ -1,5 +1,5 @@
 name: "upstream_prod"
-version: "0.9.9"
+version: "0.10.0"
 config-version: 2
 
 require-dbt-version: [">=1.5.0", "<3.0.0"]
@@ -10,3 +10,5 @@ target-path: "target" # directory which will store compiled SQL files
 clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
+
+on-run-start: '{{ populate_cache() }}'

@@ -4,7 +4,7 @@
 
 {% macro default__check_reqd_vars(prod_database, prod_schema, env_schemas, env_dbs) %}
 
-    -- At least one of the variables below must be set for the package to function
+    {# At least one of the variables below must be set for the package to function #}
     {% 
         if prod_database is none 
         and prod_schema is none 
@@ -24,7 +24,7 @@ The package can be disabled by setting the variable upstream_prod_enabled = Fals
         {% do exceptions.raise_compiler_error(error_msg) %}
     {% endif %}
 
-    -- The env_dbs option also needs the prod db name to work properly
+    {# The env_dbs option also needs the prod db name to work properly #}
     {% if env_dbs is true and prod_database is none %}
         {% set error_msg -%}
 upstream_prod_env_dbs is set to true but the production database name was not provided.

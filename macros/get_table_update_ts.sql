@@ -17,44 +17,33 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 {% macro snowflake__get_table_update_ts(resources) %}
     -- Query assumes database objects don't have case-sensitive names
     {% call statement("last_modified", fetch_result=True) %}
-        {% for res in resources %}
+        {% for db, db_resources in resources.items() %}
+            {# Flatten schemas within the database #}
+            {% set flat_db_resources = [] %}
+            {% for schema, schema_resources in db_resources.items() %}
+                {% for res in schema_resources %}
+                    {% do flat_db_resources.append({"resource": res.resource, "env": res.env, "schema": schema, "name": res.name}) %}
+                {% endfor %}
+            {% endfor %}
+
             select
-                '{{ res.resource }}' as resource,
-                '{{ res.env }}' as env,
-                table_catalog as database,
-                table_schema as schema,
-                table_name as name,
-                last_altered 
-            from {{ res.database }}.information_schema.tables
-            where
-                upper(table_schema) = upper('{{ res.schema }}')
-                and upper(table_name) = upper('{{ res.name }}')
-
-            {%- if not loop.last %} union all {% endif -%}
-        {% endfor %}
-    {% endcall %}
-
-    {{ return(load_result("last_modified")) }}
-
-{% endmacro %}
-
-
-{% macro databricks__get_table_update_ts(resources) %}
-    -- Query assumes database objects don't have case-sensitive names
-    {% call statement("last_modified", fetch_result=True) %}
-        {% for res in resources %}
-            select
-                '{{ res.resource }}' as resource,
-                '{{ res.env }}' as env,
-                table_catalog as database,
-                table_schema as schema,
-                table_name as name,
-                last_altered 
-            from system.information_schema.tables
-            where
-                table_catalog = '{{ res.database|lower }}'
-                and table_schema = '{{ res.schema|lower }}'
-                and table_name = '{{ res.name|lower }}'
+                rm.resource,
+                rm.env,
+                t.table_catalog as database,
+                t.table_schema as schema,
+                t.table_name as name,
+                t.last_altered
+            from {{ db }}.information_schema.tables t
+            inner join (
+                select column1 as resource, column2 as env, column3 as match_schema, column4 as match_name
+                from values
+                    {% for res in flat_db_resources %}
+                        ('{{ res.resource }}', '{{ res.env }}', '{{ res.schema }}', '{{ res.name }}')
+                        {%- if not loop.last %},{% endif %}
+                    {% endfor %}
+            ) rm
+                on upper(t.table_schema) = upper(rm.match_schema)
+                and upper(t.table_name) = upper(rm.match_name)
 
             {% if not loop.last %} union all {% endif %}
         {% endfor %}
@@ -65,12 +54,64 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 {% endmacro %}
 
 
+{% macro databricks__get_table_update_ts(resources) %}
+    {# Flatten resources from all databases and schemas into a single list #}
+    {% set all_resources = [] %}
+    {% for db, db_resources in resources.items() %}
+        {% for schema, schema_resources in db_resources.items() %}
+            {% for res in schema_resources %}
+                {% do all_resources.append({"resource": res.resource, "env": res.env, "database": db, "schema": schema, "name": res.name}) %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+    -- Query assumes database objects don't have case-sensitive names
+    {% call statement("last_modified", fetch_result=True) %}
+        select
+            rm.resource,
+            rm.env,
+            t.table_catalog as database,
+            t.table_schema as schema,
+            t.table_name as name,
+            t.last_altered
+        from system.information_schema.tables t
+        inner join (
+            select col1 as resource, col2 as env, col3 as match_database, col4 as match_schema, col5 as match_name
+            from values
+                {% for res in all_resources %}
+                    ('{{ res.resource }}', '{{ res.env }}', '{{ res.database|lower }}', '{{ res.schema|lower }}', '{{ res.name|lower }}')
+                    {%- if not loop.last %},{% endif %}
+                {% endfor %}
+        ) rm
+            on t.table_catalog = rm.match_database
+            and t.table_schema = rm.match_schema
+            and t.table_name = rm.match_name
+    {% endcall %}
+
+    {{ return(load_result("last_modified")) }}
+
+{% endmacro %}
+
+
 {% macro bigquery__get_table_update_ts(resources) %}
     {% call statement("last_modified", fetch_result=True) %}
-        {% for res in resources %}
+        {# BigQuery requires querying per-schema, so we union all across schemas #}
+        {# Flatten into a single list to allow clean loop.last usage #}
+        {% set flat_schemas = [] %}
+        {% for db, db_resources in resources.items() %}
+            {% for schema, schema_resources in db_resources.items() %}
+                {% do flat_schemas.append({
+                    "database": db,
+                    "schema": schema,
+                    "resources": schema_resources
+                }) %}
+            {% endfor %}
+        {% endfor %}
+
+        {% for schema_group in flat_schemas %}
             select
-                '{{ res.resource }}' as resource,
-                '{{ res.env }}' as env,
+                rm.resource,
+                rm.env,
                 inf_sch.table_catalog as database,
                 inf_sch.table_schema as schema,
                 inf_sch.table_name as name,
@@ -78,15 +119,21 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
                     timestamp_millis(meta.last_modified_time), 
                     inf_sch.creation_time
                 ) as last_altered 
-            from `{{ res.database }}.{{ res.schema }}.INFORMATION_SCHEMA.TABLES` inf_sch
-            left join `{{ res.database }}.{{ res.schema }}.__TABLES__` meta
+            from `{{ schema_group.database }}.{{ schema_group.schema }}.INFORMATION_SCHEMA.TABLES` inf_sch
+            left join `{{ schema_group.database }}.{{ schema_group.schema }}.__TABLES__` meta
                 on inf_sch.table_catalog = meta.project_id
                 and inf_sch.table_schema = meta.dataset_id
                 and inf_sch.table_name = meta.table_id
-            where
-                inf_sch.table_catalog = '{{ res.database|lower }}'
-                and inf_sch.table_schema = '{{ res.schema|lower }}'
-                and inf_sch.table_name = '{{ res.name|lower }}'
+            inner join (
+                -- BigQuery doesn't support aliased columns in VALUES without SELECT
+                {% for res in schema_group.resources %}
+                    select '{{ res.resource }}' as resource, '{{ res.env }}' as env, '{{ schema_group.database|lower }}' as match_database, '{{ schema_group.schema|lower }}' as match_schema, '{{ res.name|lower }}' as match_name
+                    {%- if not loop.last %} union all {% endif %}
+                {% endfor %}
+            ) rm
+                on inf_sch.table_catalog = rm.match_database
+                and inf_sch.table_schema = rm.match_schema
+                and inf_sch.table_name = rm.match_name
 
             {% if not loop.last %} union all {% endif %}
         {% endfor %}

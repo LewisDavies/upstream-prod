@@ -13,7 +13,7 @@
     {{ upstream_prod.check_reqd_vars(var("upstream_prod_database", None), var("upstream_prod_schema", None), var("upstream_prod_env_schemas", False), env_dbs=var("upstream_prod_env_dbs", False)) }}
 
         {# Find parents of selected models #}
-        {% set to_check = [] %}
+        {% set to_check = {} %}
         {% for resource in selected_resources %}
             {% set node = graph.nodes[resource] %}
             {% for parent in node.depends_on.nodes %}
@@ -24,22 +24,32 @@
                     {% set parent_name = parent_node["alias"] or parent_node["name"] %}
                     {% set parent_resource = parent_node["package_name"] ~ "." ~ parent_name %}
 
-                    {# Add dev relation to check list #}
-                    {% do to_check.append({
+                    {# Add dev relation to check list, grouped by database and schema #}
+                    {% set dev_db = parent_node["database"] %}
+                    {% set dev_schema = parent_node["schema"] %}
+                    {% if dev_db not in to_check %}
+                        {% do to_check.update({dev_db: {}}) %}
+                    {% endif %}
+                    {% if dev_schema not in to_check[dev_db] %}
+                        {% do to_check[dev_db].update({dev_schema: []}) %}
+                    {% endif %}
+                    {% do to_check[dev_db][dev_schema].append({
                         "resource": parent_resource,
                         "env": "dev",
-                        "database": parent_node["database"],
-                        "schema": parent_node["schema"],
-                        "name": parent_node["alias"] or parent_node["name"]
+                        "name": parent_name
                     }) %}
 
                     {# Find prod relation and add to check list #}
                     {% set prod_rel_db, prod_rel_schema, prod_rel_name = upstream_prod.get_prod_relation(parent_node, parent_node["database"], parent_node["schema"]) %}
-                    {% do to_check.append({
+                    {% if prod_rel_db not in to_check %}
+                        {% do to_check.update({prod_rel_db: {}}) %}
+                    {% endif %}
+                    {% if prod_rel_schema not in to_check[prod_rel_db] %}
+                        {% do to_check[prod_rel_db].update({prod_rel_schema: []}) %}
+                    {% endif %}
+                    {% do to_check[prod_rel_db][prod_rel_schema].append({
                         "resource": parent_resource,
                         "env": "prod",
-                        "database": prod_rel_db,
-                        "schema": prod_rel_schema,
                         "name": prod_rel_name
                     }) %}
                 {% endif %}

@@ -11,6 +11,6 @@ do
     echo ""
     echo ""
     date
-    echo "#### TESTING ALL PROJECTS ($platform)"
+    echo "#### PLATFORM: $platform"
     sh run_tests.sh
 done

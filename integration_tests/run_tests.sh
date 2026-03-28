@@ -10,7 +10,7 @@ do
     echo ""
     echo ""
     date
-    echo "#### TESTING $file"
+    echo "### PROJECT: $file"
 
     # Setup
     echo ""

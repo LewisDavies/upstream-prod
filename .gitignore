@@ -7,6 +7,7 @@ logs/
 .venv
 .DS_Store
 .envrc
+.env
 # Always a copy of one of the files in integration_tests/dbt_project_files
 integration_tests/dbt_project.yml
 # Keeps getting changed when switching between Core & Fusion

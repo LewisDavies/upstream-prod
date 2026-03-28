@@ -7,39 +7,32 @@ cd $script_dir
 for file in dbt_project_files/*
 do
     cp $file dbt_project.yml
-    echo ""
-    echo ""
-    date
-    echo "### PROJECT: $file"
+    project=$(basename $file .yml)
+    start=$SECONDS
 
-    # Setup
     echo ""
-    echo "## SETTING UP ENVIRONMENT"
+    echo "  Project: $project"
+
+    echo "    Setting up..."
     dbt clean
     dbt deps
     dbt run-operation create_test_db --args '{db: upproddb}'
     dbt run-operation create_test_db --args '{db: updevdb}'
 
-    # Create staging models in appropriate envs
-    echo ""
-    echo "## RUNNING STAGING MODELS"
+    echo "    Running staging models..."
     dbt snapshot -t prod
     dbt run -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch -t prod
     dbt run -s stg__dev_fallback stg__dev_newer
 
-    # Build & test downstream models
-    echo ""
-    echo "## BUILDING DOWNSTREAM MODELS"
+    echo "    Building downstream models..."
     # event-time flags only affect the microbatch model
     dbt build -s models/marts --event-time-start "2025-01-01" --event-time-end "2025-01-03"
 
-    # Check --empty flag
-    echo ""
-    echo "## CHECKING EMPTY FLAG"
+    echo "    Checking --empty flag..."
     dbt build -s defer_prod --empty
 
-    # Check dbt-codegen compatibility
-    echo ""
-    echo "## CHECKING CODEGEN OUTPUT"
-    dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}'
+    echo "    Checking codegen output..."
+    dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}' > /dev/null
+
+    echo "  Done in $((SECONDS - start))s"
 done

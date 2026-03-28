@@ -20,19 +20,34 @@ setup: .venv .env
 debug: debug-snowflake debug-databricks debug-bigquery
 
 debug-snowflake:
-	cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
-	UP_TARGET_PLATFORM=sf dbt debug
+	@cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
+	@UP_TARGET_PLATFORM=sf dbt debug
 
 debug-databricks:
-	cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
-	UP_TARGET_PLATFORM=dbx dbt debug
+	@cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
+	@UP_TARGET_PLATFORM=dbx dbt debug
 
 debug-bigquery:
-	cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
-	UP_TARGET_PLATFORM=bq dbt debug
+	@cp integration_tests/dbt_project_files/dev_db.yml integration_tests/dbt_project.yml
+	@UP_TARGET_PLATFORM=bq dbt debug
 
 # Tests
-test: test-snowflake test-databricks test-bigquery
+test:
+	@echo ""
+	@echo "========================================"
+	@echo "  Platform: Snowflake"
+	@echo "========================================"
+	@$(MAKE) test-snowflake
+	@echo ""
+	@echo "========================================"
+	@echo "  Platform: Databricks"
+	@echo "========================================"
+	@$(MAKE) test-databricks
+	@echo ""
+	@echo "========================================"
+	@echo "  Platform: BigQuery"
+	@echo "========================================"
+	@$(MAKE) test-bigquery
 
 test-snowflake:
 	@UP_TARGET_PLATFORM=sf DBT_QUIET=true sh integration_tests/run_tests.sh

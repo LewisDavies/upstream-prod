@@ -2,6 +2,7 @@
 export
 export DBT_PROJECT_DIR=$(CURDIR)/integration_tests
 export DBT_PROFILES_DIR=$(CURDIR)/integration_tests
+export PYTHONWARNINGS=ignore
 
 .PHONY: setup test-snowflake test-databricks test-bigquery test debug-snowflake debug-databricks debug-bigquery debug
 
@@ -33,27 +34,13 @@ debug-bigquery:
 
 # Tests
 test:
-	@echo ""
-	@echo "========================================"
-	@echo "  Platform: Snowflake"
-	@echo "========================================"
-	@$(MAKE) test-snowflake
-	@echo ""
-	@echo "========================================"
-	@echo "  Platform: Databricks"
-	@echo "========================================"
-	@$(MAKE) test-databricks
-	@echo ""
-	@echo "========================================"
-	@echo "  Platform: BigQuery"
-	@echo "========================================"
-	@$(MAKE) test-bigquery
+	@DBT_QUIET=true sh integration_tests/run_tests.sh
 
 test-snowflake:
-	@UP_TARGET_PLATFORM=sf DBT_QUIET=true sh integration_tests/run_tests.sh
+	@DBT_QUIET=true sh integration_tests/run_tests.sh sf
 
 test-databricks:
-	@UP_TARGET_PLATFORM=dbx DBT_QUIET=true sh integration_tests/run_tests.sh
+	@DBT_QUIET=true sh integration_tests/run_tests.sh dbx
 
 test-bigquery:
-	@UP_TARGET_PLATFORM=bq DBT_QUIET=true sh integration_tests/run_tests.sh
+	@DBT_QUIET=true sh integration_tests/run_tests.sh bq

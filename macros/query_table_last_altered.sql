@@ -1,8 +1,8 @@
-{% macro get_table_update_ts(resources) %}
-    {{ return(adapter.dispatch("get_table_update_ts", "upstream_prod")(resources)) }}
+{% macro query_table_last_altered(resources) %}
+    {{ return(adapter.dispatch("query_table_last_altered", "upstream_prod")(resources)) }}
 {% endmacro %}
 
-{% macro default__get_table_update_ts(resources) %}
+{% macro default__query_table_last_altered(resources) %}
 
     {% set warning_msg %}
 upstream_prod_prefer_recent is set to true but this feature is incompatible with {{ target.type }} databases. Unsetting the variable may improve project performance.
@@ -14,7 +14,7 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 {% endmacro %}
 
 
-{% macro snowflake__get_table_update_ts(resources) %}
+{% macro snowflake__query_table_last_altered(resources) %}
     -- Query assumes database objects don't have case-sensitive names
     {% call statement("last_modified", fetch_result=True) %}
         {% for db, db_resources in resources.items() %}
@@ -54,7 +54,7 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 {% endmacro %}
 
 
-{% macro databricks__get_table_update_ts(resources) %}
+{% macro databricks__query_table_last_altered(resources) %}
     {# Flatten resources from all databases and schemas into a single list #}
     {% set all_resources = [] %}
     {% for db, db_resources in resources.items() %}
@@ -93,7 +93,7 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 {% endmacro %}
 
 
-{% macro bigquery__get_table_update_ts(resources) %}
+{% macro bigquery__query_table_last_altered(resources) %}
     {% call statement("last_modified", fetch_result=True) %}
         {# BigQuery requires querying per-schema, so we union all across schemas #}
         {# Flatten into a single list to allow clean loop.last usage #}
@@ -116,9 +116,9 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
                 inf_sch.table_schema as schema,
                 inf_sch.table_name as name,
                 coalesce(
-                    timestamp_millis(meta.last_modified_time), 
+                    timestamp_millis(meta.last_modified_time),
                     inf_sch.creation_time
-                ) as last_altered 
+                ) as last_altered
             from `{{ schema_group.database }}.{{ schema_group.schema }}.INFORMATION_SCHEMA.TABLES` inf_sch
             left join `{{ schema_group.database }}.{{ schema_group.schema }}.__TABLES__` meta
                 on inf_sch.table_catalog = meta.project_id

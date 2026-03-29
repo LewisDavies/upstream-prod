@@ -23,35 +23,9 @@
                     {% set parent_node = graph.nodes[parent] %}
                     {% set parent_name = parent_node["alias"] or parent_node["name"] %}
                     {% set parent_resource = parent_node["package_name"] ~ "." ~ parent_name %}
-
-                    {# Add dev relation to check list, grouped by database and schema #}
-                    {% set dev_db = parent_node["database"] %}
-                    {% set dev_schema = parent_node["schema"] %}
-                    {% if dev_db not in to_check %}
-                        {% do to_check.update({dev_db: {}}) %}
-                    {% endif %}
-                    {% if dev_schema not in to_check[dev_db] %}
-                        {% do to_check[dev_db].update({dev_schema: []}) %}
-                    {% endif %}
-                    {% do to_check[dev_db][dev_schema].append({
-                        "resource": parent_resource,
-                        "env": "dev",
-                        "name": parent_name
-                    }) %}
-
-                    {# Find prod relation and add to check list #}
                     {% set prod_rel_db, prod_rel_schema, prod_rel_name = upstream_prod.get_prod_relation(parent_node, parent_node["database"], parent_node["schema"]) %}
-                    {% if prod_rel_db not in to_check %}
-                        {% do to_check.update({prod_rel_db: {}}) %}
-                    {% endif %}
-                    {% if prod_rel_schema not in to_check[prod_rel_db] %}
-                        {% do to_check[prod_rel_db].update({prod_rel_schema: []}) %}
-                    {% endif %}
-                    {% do to_check[prod_rel_db][prod_rel_schema].append({
-                        "resource": parent_resource,
-                        "env": "prod",
-                        "name": prod_rel_name
-                    }) %}
+
+                    {{ upstream_prod.add_node_to_check(to_check, parent_node, prod_rel_db, prod_rel_schema, prod_rel_name, parent_resource, parent_name) }}
                 {% endif %}
             {% endfor %}
         {% endfor %}
@@ -60,28 +34,8 @@
         the integration_tests snapshots which don't use ref or source, it's probably quite rare for
         this pattern to appear in real models. #}
         {% if to_check | length > 0 %}
-            {# Get timestamps of last update #}
-            {% set checked = upstream_prod.get_table_update_ts(to_check) %}
-
-            {% set output = {} %}
-            {% for row in checked.data %}
-                {# Add dict for each relation #}
-                {% if row[0] not in output %}
-                    {% do output.update({row[0]: {}}) %}
-                {% endif %}
-                {# Add sub-dict for dev and prod (if they exist) #}
-                {% do output[row[0]].update({
-                    row[1]: {
-                        "database": row[2],
-                        "schema": row[3],
-                        "name": row[4],
-                        "last_altered": row[5]
-                    }
-                }) %}
-            {% endfor %}
-
             {# Persist timestamps on the graph for the rest of the run #}
-            {% do graph.update({"_upstream_prod_cache": output}) %}
+            {% do graph.update({"_upstream_prod_cache": upstream_prod.get_node_timestamps(to_check)}) %}
         {% endif %}
 
     {% endif %}

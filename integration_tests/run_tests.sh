@@ -27,7 +27,7 @@ do
     echo "  Platform: $(platform_name $platform)"
     echo "========================================"
 
-    UP_TARGET_PLATFORM=$platform
+    export UP_TARGET_PLATFORM=$platform
 
     for file in dbt_project_files/*
     do

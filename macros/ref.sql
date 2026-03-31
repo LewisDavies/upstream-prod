@@ -73,6 +73,13 @@
                     {% set to_check = {} %}
                     {{ upstream_prod.add_node_to_check(to_check, parent_node, prod_rel_db, prod_rel_schema, prod_rel_name, parent_resource, parent_name) }}
                     {% set cached_resource = upstream_prod.get_node_timestamps(to_check).get(parent_resource) %}
+                    -- Persist to graph cache so subsequent refs to the same parent skip the query
+                    {% if "_upstream_prod_cache" not in graph %}
+                        {% do graph.update({"_upstream_prod_cache": {}}) %}
+                    {% endif %}
+                    {% if cached_resource is not none %}
+                        {% do graph["_upstream_prod_cache"].update({parent_resource: cached_resource}) %}
+                    {% endif %}
                 {% endif %}
 
                 -- Return dev relation if it exists and is fresher than prod

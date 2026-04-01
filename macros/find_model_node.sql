@@ -6,7 +6,7 @@
 
     {% if execute is true %}
         {% set matching_nodes = [] %}
-        {% for n in graph.nodes.values() if n["name"] == model %}
+        {% for n in graph.nodes.values() if model in [n["name"], n["alias"]] %}
             {% if project is none or project == n["package_name"] %}
                 {% if version is not none %}
                     {% if n["version"] == version %}

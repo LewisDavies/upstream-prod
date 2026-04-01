@@ -1,24 +1,24 @@
-{% macro populate_cache() %}
-    {{ return(adapter.dispatch("populate_cache", "upstream_prod")()) }}
+{% macro populate_cache(nodes) %}
+    {{ return(adapter.dispatch("populate_cache", "upstream_prod")(nodes)) }}
 {% endmacro %}
 
-{% macro default__populate_cache() %}
+{% macro default__populate_cache(nodes) %}
 
-    {% if execute 
+    {% if execute
         and var("upstream_prod_enabled", True)
         and var("upstream_prod_prefer_recent", False)
         and target.name not in var("upstream_prod_disabled_targets", [])
     %}
-    {# Raise error if at least one required variable is not set #}
-    {{ upstream_prod.check_reqd_vars(var("upstream_prod_database", None), var("upstream_prod_schema", None), var("upstream_prod_env_schemas", False), env_dbs=var("upstream_prod_env_dbs", False)) }}
+        {# Raise error if at least one required variable is not set #}
+        {{ upstream_prod.check_reqd_vars(var("upstream_prod_database", None), var("upstream_prod_schema", None), var("upstream_prod_env_schemas", False), env_dbs=var("upstream_prod_env_dbs", False)) }}
 
         {# Find parents of selected models #}
         {% set to_check = {} %}
-        {% for resource in selected_resources %}
+        {% for resource in nodes %}
             {% set node = graph.nodes[resource] %}
             {% for parent in node.depends_on.nodes %}
                 {# Find parent models excluding those selected on the current run #}
-                {% if parent.startswith("model.") and parent not in selected_resources %}
+                {% if parent.startswith("model.") and parent not in nodes %}
                     {# Find parent on the graph to get relation info #}
                     {% set parent_node = graph.nodes[parent] %}
                     {% set parent_name = parent_node["alias"] or parent_node["name"] %}
@@ -35,7 +35,10 @@
         this pattern to appear in real models. #}
         {% if to_check | length > 0 %}
             {# Persist timestamps on the graph for the rest of the run #}
-            {% do graph.update({"_upstream_prod_cache": upstream_prod.get_node_timestamps(to_check)}) %}
+            {% if "_upstream_prod_cache" not in graph %}
+                {% do graph.update({"_upstream_prod_cache": {}}) %}
+            {% endif %}
+            {% do graph["_upstream_prod_cache"].update(upstream_prod.get_node_timestamps(to_check)) %}
         {% endif %}
 
     {% endif %}

@@ -66,26 +66,19 @@
                 {% set parent_name = parent_node["alias"] or parent_node["name"] %}
                 {% set parent_resource = parent_node["package_name"] ~ "." ~ parent_name %}
 
-                -- Use cache when available; otherwise query information_schema directly for this model pair
-                {% if "_upstream_prod_cache" in graph and parent_resource in graph["_upstream_prod_cache"] %}
-                    {% set cached_resource = graph["_upstream_prod_cache"][parent_resource] %}
-                {% else %}
-                    {% set to_check = {} %}
-                    {{ upstream_prod.add_node_to_check(to_check, parent_node, prod_rel_db, prod_rel_schema, prod_rel_name, parent_resource, parent_name) }}
-                    {% set cached_resource = upstream_prod.get_node_timestamps(to_check).get(parent_resource) %}
-                    -- Persist to graph cache so subsequent refs to the same parent skip the query
-                    {% if "_upstream_prod_cache" not in graph %}
-                        {% do graph.update({"_upstream_prod_cache": {}}) %}
-                    {% endif %}
-                    {% if cached_resource is not none %}
-                        {% do graph["_upstream_prod_cache"].update({parent_resource: cached_resource}) %}
-                    {% endif %}
+                -- Populate cache for all parents of this model on cache miss
+                {% if "_upstream_prod_cache" not in graph or parent_resource not in graph["_upstream_prod_cache"] %}
+                    {% set this_node = upstream_prod.find_model_node(current_model, None, None) %}
+                    {{ upstream_prod.populate_cache([this_node["unique_id"]]) }}
                 {% endif %}
 
                 -- Return dev relation if it exists and is fresher than prod
-                {% if cached_resource is not none and cached_resource["dev"]["last_altered"] | string > cached_resource["prod"]["last_altered"] | string %}
-                    {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
-                    {% set return_rel = dev_rel %}
+                {% if "_upstream_prod_cache" in graph and parent_resource in graph["_upstream_prod_cache"] %}
+                    {% set cached_resource = graph["_upstream_prod_cache"][parent_resource] %}
+                    {% if cached_resource["dev"]["last_altered"] | string > cached_resource["prod"]["last_altered"] | string %}
+                        {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
+                        {% set return_rel = dev_rel %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
         {% elif dev_exists %}

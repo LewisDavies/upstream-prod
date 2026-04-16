@@ -93,20 +93,9 @@
             {{ upstream_prod.raise_ref_not_found_error(current_model, prod_rel_db, prod_rel_schema, prod_rel_name) }}
         {% endif %}
 
-        -- Adjust output if --empty flag was used
-        {% if flags.EMPTY %}
-            {{ return("(select * from " ~ return_rel ~ " where 0=1 limit 0)") }}
-        -- Add filter for microbatch models or when --sample is used
-        {% elif parent_ref.event_time_filter is not none and parent_ref.event_time_filter is not undefined %}
-            {% set filt = parent_ref.event_time_filter %}
-            {{ return(
-                "(select * from " ~ return_rel ~ " where cast(" ~
-                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") >= cast('" ~ filt.start ~ "' as " ~ dbt.type_timestamp() ~ ") and cast(" ~ 
-                filt.field_name ~ " as " ~ dbt.type_timestamp() ~ ") < cast('" ~ filt.end ~ "' as " ~ dbt.type_timestamp() ~ "))"
-            ) }}
-        {% else %}
-            {{ return(return_rel) }}
-        {% endif %}
+        -- Carry over limit (--empty) and event_time_filter (microbatch/--sample) from the builtin ref
+        {% set return_rel = return_rel.replace(limit=parent_ref.limit, event_time_filter=parent_ref.event_time_filter) %}
+        {{ return(return_rel) }}
 
     {% endif %}
 {% endmacro %}

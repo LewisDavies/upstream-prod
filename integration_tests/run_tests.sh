@@ -39,25 +39,25 @@ do
         echo "  Project: $project"
 
         echo "    Setting up..."
-        dbt clean
-        dbt deps
-        dbt run-operation create_test_db --args '{db: upproddb}'
-        dbt run-operation create_test_db --args '{db: updevdb}'
+        dbt clean -t dev
+        dbt deps -t dev
+        dbt run-operation create_test_db -t dev --args '{db: upproddb}'
+        dbt run-operation create_test_db -t dev --args '{db: updevdb}'
 
         echo "    Running staging models..."
         dbt snapshot -t prod
-        dbt run -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch -t prod
-        dbt run -s stg__dev_fallback stg__dev_newer
+        dbt run -t prod -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch
+        dbt run -t dev -s stg__dev_fallback stg__dev_newer
 
         echo "    Building downstream models..."
         # event-time flags only affect the microbatch model
-        dbt build -s models/marts --event-time-start "2025-01-01" --event-time-end "2025-01-03"
+        dbt build -t dev -s models/marts --event-time-start "2025-01-01" --event-time-end "2025-01-03"
 
         echo "    Checking --empty flag..."
-        dbt build -s defer_prod --empty
+        dbt build -t dev -s defer_prod --empty
 
         echo "    Checking codegen output..."
-        dbt run-operation generate_model_yaml --args '{"model_names": [stg__defer_prod]}' > /dev/null
+        dbt run-operation generate_model_yaml -t dev --args '{"model_names": [stg__defer_prod]}' > /dev/null
 
         echo "  Done in $((SECONDS - start))s"
     done

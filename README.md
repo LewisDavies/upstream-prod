@@ -18,16 +18,16 @@ If upgrading from an earlier version:
 
 > ℹ️ If you need help setting up the package, please create an issue or tag / DM @LewisDavies on the dbt Slack.
 
-The package relies on a few variables that indicate where prod data is avaiable. The exact requirements depend on your setup; use the questions below to find the correct variables for your project. 
+The package relies on a few variables that indicate where prod data is available. The exact requirements depend on your setup; use the questions below to find the correct variables for your project. 
 
-#### 1. Does your project have a custom schema macro?
+### 1. Does your project have a custom schema macro?
 
 If you aren't sure, check your `macros` directory for a macro called `generate_schema_name`. The exact filename may differ - [dbt's docs](https://docs.getdbt.com/docs/build/custom-schemas#a-built-in-alternative-pattern-for-generating-schema-names) call it `get_custom_schema.sql` - so you may need to check the file contents.
 
-#### 2. Do your dev & prod environments use the same database?
+### 2. Do your dev & prod environments use the same database?
 Your platform may use a different term, such as _catalog_ on Databricks or _project_ on BigQuery.
 
-#### 3. Choose the appropriate setup
+### 3. Choose the appropriate setup
 
 |                                   | Custom schema macro | No custom schema macro |
 |-----------------------------------|---------------------|------------------------|
@@ -275,6 +275,17 @@ In your `macros` directory, create a file called `ref.sql` with the following co
 
 Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`. This is suitable for testing the package but is not recommended for general use.
 
+### 5. Configure dbt Power User (optional)
+
+If you use the [dbt Power User](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user) VS Code extension, set its dbt integration mode to `corecommand`:
+
+```json
+// .vscode/settings.json
+"dbt.dbtIntegration": "corecommand"
+```
+
+The default `core` mode uses a custom dbt runner that doesn't play nicely with the `upstream_prod_prefer_recent` setting. Using the `corecommand` mode makes the extension use CLI commands instead, meaning this package always compares prod & dev relations when running preview queries.
+
 ## How it works
 
 Assume your project has an `events` model that depends on intermediate and staging layers. The simplified DAGs looks like this:
@@ -296,13 +307,13 @@ Assume your project has an `events` model that depends on intermediate and stagi
 
 You want to change `int_events`, so you need a copy of `stg_events` in dev. This could be expensive and time-consuming to create from scratch, and it could slow down your development process considerably. Perhaps this model already exists from previous work, but is it up-to-date? If the model definition or underlying data has changed, your dev model may break in prod.
 
-`upstream-prod` sovles this problem by intelligently redirecting `ref`s based on the selected models for the current run. Running `dbt build -s int_events+` would:
+`upstream-prod` solves this problem by intelligently redirecting `ref`s based on the selected models for the current run. Running `dbt build -s int_events+` would:
 
 1. Create `dev.int_events` using data from `prod.stg_events`
 2. Create `dev.events` on top of `dev.int_events`, since the package recognises that `int_events` has been selected
 3. Run tests against `dev.int_events` and `dev.events`
 
-Now that your dev models are using prod data, you DAG would look like this:
+Now that your dev models are using prod data, your DAG would look like this:
 ```mermaid
   graph LR
       source[(Source)]

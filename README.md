@@ -11,7 +11,7 @@ In a typical project, prod and dev models are materialised in [separate environm
 ### ⚠️ Breaking changes in version `0.9.0`
 
 If upgrading from an earlier version:
-- Your `ref` macro *must* be updated by copying [this example](#4-create-a-custom-ref-macro).
+- Your `ref` macro *must* be updated by copying [this example](#5-create-a-custom-ref-macro).
 - Projects using the deprecated `upstream_prod_database_replace` variable should follow the setup guide to use `upstream_prod_env_dbs` instead.
 
 ## Setup
@@ -20,14 +20,25 @@ If upgrading from an earlier version:
 
 The package relies on a few variables that indicate where prod data is available. The exact requirements depend on your setup; use the questions below to find the correct variables for your project. 
 
-### 1. Does your project have a custom schema macro?
+### 1. Install the package
+
+Add `upstream_prod` to `packages.yml`, then run `dbt deps`:
+
+```yml
+# packages.yml
+packages:
+  - package: LewisDavies/upstream_prod
+    version: 0.10.2
+```
+
+### 2. Does your project have a custom schema macro?
 
 If you aren't sure, check your `macros` directory for a macro called `generate_schema_name`. The exact filename may differ - [dbt's docs](https://docs.getdbt.com/docs/build/custom-schemas#a-built-in-alternative-pattern-for-generating-schema-names) call it `get_custom_schema.sql` - so you may need to check the file contents.
 
-### 2. Do your dev & prod environments use the same database?
+### 3. Do your dev & prod environments use the same database?
 Your platform may use a different term, such as _catalog_ on Databricks or _project_ on BigQuery.
 
-### 3. Choose the appropriate setup
+### 4. Choose the appropriate setup
 
 |                                   | Custom schema macro | No custom schema macro |
 |-----------------------------------|---------------------|------------------------|
@@ -41,7 +52,12 @@ Your platform may use a different term, such as _catalog_ on Databricks or _proj
 <details><summary>Setup A</summary>
 <br/>
 
-Your custom schema macro needs two small tweaks to work with the package. As an example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
+Your custom schema macro needs two changes:
+
+1. Add an `is_upstream_prod=False` parameter to the macro signature.
+2. In every condition that selects your production schema naming path, add `or is_upstream_prod is true` — and make sure the resulting `or` group is wrapped in brackets.
+
+For example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
@@ -109,7 +125,12 @@ vars:
 <details><summary>Setup C</summary>
 <br/>
 
-Your custom schema macro needs two small tweaks to work with the package. As an example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
+Your custom schema macro needs two changes:
+
+1. Add an `is_upstream_prod=False` parameter to the macro signature.
+2. In every condition that selects your production schema naming path, add `or is_upstream_prod is true` — and make sure the resulting `or` group is wrapped in brackets.
+
+For example, the macro below shows how to adapt the [built-in `generate_schema_name_for_env` macro](https://github.com/dbt-labs/dbt-adapters/blob/6e765f58d1a15f7fcc15e504916543bd55bd62b7/dbt/include/global_project/macros/get_custom_name/get_custom_schema.sql#L47-L60):
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
@@ -158,7 +179,12 @@ There are two more steps if your project has a custom `generate_database_name` m
 
 First, add `upstream_prod_env_dbs: true` to `dbt_project.yml`.
 
-Then update your custom database macro in exactly the same way as your schema macro. For example:
+Then apply the same two changes to your custom database macro:
+
+1. Add an `is_upstream_prod=False` parameter to the macro signature.
+2. In every condition that selects your production database naming path, add `or is_upstream_prod is true` — and make sure the resulting `or` group is wrapped in brackets.
+
+For example:
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
@@ -213,7 +239,12 @@ There are two more steps if your project has a custom `generate_database_name` m
 
 First, add `upstream_prod_env_dbs: true` to `dbt_project.yml`.
 
-Your custom database macro now needs two small tweaks to work with the package, as shown in the example below:
+Your custom database macro needs two changes:
+
+1. Add an `is_upstream_prod=False` parameter to the macro signature.
+2. In every condition that selects your production database naming path, add `or is_upstream_prod is true` — and make sure the resulting `or` group is wrapped in brackets.
+
+For example:
 
 ```sql
 -- 1. Add an is_upstream_prod parameter that defaults to False
@@ -240,7 +271,7 @@ Your custom database macro now needs two small tweaks to work with the package, 
 </details>
 <!-- END COLLAPSIBLE SECTIONS -->
 
-### 4. Create a custom `ref()` macro
+### 5. Create a custom `ref()` macro
 
 In your `macros` directory, create a file called `ref.sql` with the following contents:
 ```sql
@@ -275,7 +306,7 @@ In your `macros` directory, create a file called `ref.sql` with the following co
 
 Alternatively, you can find any instances of `{{ ref() }}` in your project and replace them with `{{ upstream_prod.ref() }}`. This is suitable for testing the package but is not recommended for general use.
 
-### 5. Configure dbt Power User (optional)
+### 6. Configure dbt Power User (optional)
 
 If you use the [dbt Power User](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user) VS Code extension, set its dbt integration mode to `corecommand`:
 
@@ -285,6 +316,10 @@ If you use the [dbt Power User](https://marketplace.visualstudio.com/items?itemN
 ```
 
 The default `core` mode uses a custom dbt runner that doesn't play nicely with the `upstream_prod_prefer_recent` setting. Using the `corecommand` mode makes the extension use CLI commands instead, meaning this package always compares prod & dev relations when running preview queries.
+
+### 7. Verify
+
+Run `dbt compile -s <any_model_with_refs>` and open the compiled SQL in `target/compiled/…`. Refs to models you haven't built locally should resolve to your production schema; refs to models you have built should resolve to your dev schema. If refs still point at empty dev schemas, check that your `ref.sql` macro is in `macros/` and that `upstream_prod_enabled` isn't set to `false`.
 
 ## How it works
 

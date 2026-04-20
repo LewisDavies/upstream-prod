@@ -8,3 +8,4 @@
 - [ ] Passed integration tests
 - [ ] Checked installation instructions
 - [ ] Bumped package version
+- [ ] Updated package version in README install snippet

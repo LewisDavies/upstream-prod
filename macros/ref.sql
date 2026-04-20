@@ -82,7 +82,9 @@
 
                 -- Return dev relation if it exists and is fresher than prod
                 {% set cached_resource = graph["_upstream_prod_cache"].get(parent_resource) if "_upstream_prod_cache" in graph else none %}
-                {% if cached_resource is not none and cached_resource["dev"]["last_altered"] | string > cached_resource["prod"]["last_altered"] | string %}
+                {% if cached_resource is not none and cached_resource is not undefined
+                    and cached_resource["dev"]["last_altered"] | string > cached_resource["prod"]["last_altered"] | string
+                %}
                     {{ log("[" ~ current_model ~ "] " ~ parent_ref.table ~ " fresher in dev than prod, switching to dev relation", info=True) }}
                     {% set return_rel = dev_rel %}
                 {% endif %}

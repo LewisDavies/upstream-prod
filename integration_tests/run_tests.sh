@@ -56,6 +56,9 @@ do
         echo "    Checking --empty flag..."
         dbt build -t dev -s defer_prod --empty
 
+        echo "    Checking --inline flag..."
+        dbt show -t dev --inline 'select * from {{ ref("stg__dev_newer") }}' --limit 5 > /dev/null
+
         echo "    Checking codegen output..."
         dbt run-operation generate_model_yaml -t dev --args '{"model_names": [stg__defer_prod]}' > /dev/null
 

@@ -46,7 +46,7 @@ do
 
         echo "    Running staging models..."
         dbt snapshot -t prod
-        dbt run -t prod -s stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch
+        dbt run -t prod -s stg__aliased stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch
         dbt run -t dev -s stg__dev_fallback stg__dev_newer
 
         echo "    Building downstream models..."

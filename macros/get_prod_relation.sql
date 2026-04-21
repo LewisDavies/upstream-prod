@@ -41,14 +41,19 @@
         {% set parent_database = prod_database or dev_database %}
     {% endif %}
 
-    /***************    
-    prod_rel_name helps the package find the correct prod relation for projects using a custom 
-    generate_alias_name macro. It assumes that custom aliases are only used in dev envs and prod
-    relations always have the same name as the model (+ version suffix when needed).
-    It's hacky but it seems to work. 
+    /***************
+    prod_rel_name identifies the correct prod relation. There are two cases:
+    1. A persistent `config(alias=...)` on the model — the alias is the real name in both
+       environments, so we use it directly.
+    2. Otherwise — the alias may be a dev-only override set by a custom `generate_alias_name`
+       macro, so we fall back to the filename (+ version suffix when needed).
     ***************/
     {% set re = modules.re %}
-    {% set prod_rel_name = re.search("\w+(?=\.)", parent_node.path).group() %}
+    {% if parent_node.config.alias is not none %}
+        {% set prod_rel_name = parent_node.config.alias %}
+    {% else %}
+        {% set prod_rel_name = re.search("\w+(?=\.)", parent_node.path).group() %}
+    {% endif %}
 
     {{ return([parent_database, parent_schema, prod_rel_name]) }}
 

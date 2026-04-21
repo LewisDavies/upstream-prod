@@ -1,6 +1,52 @@
 version: 2
 
 models:
+  - name: aliased
+    columns:
+      # Source
+      - name: source_target
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('prod_target') }}"
+      - name: source_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('prod_database') }}"
+      - name: source_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('prod_stg_schema') }}"
+      - name: source_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['stg__aliased_renamed']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_target') }}"
+      - name: this_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_database') }}"
+      - name: this_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_marts_schema') }}"
+      - name: this_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['aliased']
+
+
   - name: cross_project
     columns:
       # Source
@@ -116,8 +162,8 @@ models:
           - accepted_values:
               arguments:
                 values: ['stg__defer_prod']
-          # This specific model has a relationship test because the upstream model is materialised
-          # in prod, not dev
+          # Relationships test confirms the ref resolved to a queryable relation.
+          # The other tests only check literal values baked in when the upstream was built.
           - relationships:
               arguments:
                 to: ref("stg__defer_prod")

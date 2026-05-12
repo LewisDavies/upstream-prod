@@ -94,20 +94,44 @@ upstream_prod_prefer_recent is set to true but this feature is incompatible with
 
 
 {% macro bigquery__query_table_last_altered(resources) %}
-    {% call statement("last_modified", fetch_result=True) %}
-        {# BigQuery requires querying per-schema, so we union all across schemas #}
-        {# Flatten into a single list to allow clean loop.last usage #}
-        {% set flat_schemas = [] %}
-        {% for db, db_resources in resources.items() %}
-            {% for schema, schema_resources in db_resources.items() %}
+    {# BigQuery requires querying per-schema (no database-wide INFORMATION_SCHEMA.TABLES),
+       and errors when the queried dataset does not exist. Probe INFORMATION_SCHEMA.SCHEMATA
+       first per database, then build the union only over (db, schema) pairs that exist. #}
+    {% set existing_schemas = {} %}
+    {% for db in resources.keys() %}
+        {% set schemata_query %}
+            select schema_name from `{{ db }}`.INFORMATION_SCHEMA.SCHEMATA
+        {% endset %}
+        {% set schemata_result = run_query(schemata_query) %}
+        {% set names = [] %}
+        {% if schemata_result is not none %}
+            {% for row in schemata_result %}
+                {% do names.append(row[0] | lower) %}
+            {% endfor %}
+        {% endif %}
+        {% do existing_schemas.update({db: names}) %}
+    {% endfor %}
+
+    {% set flat_schemas = [] %}
+    {% for db, db_resources in resources.items() %}
+        {% for schema, schema_resources in db_resources.items() %}
+            {% if schema | lower in existing_schemas.get(db, []) %}
                 {% do flat_schemas.append({
                     "database": db,
                     "schema": schema,
                     "resources": schema_resources
                 }) %}
-            {% endfor %}
+            {% endif %}
         {% endfor %}
+    {% endfor %}
 
+    {# If none of the parent envs have a dataset yet (e.g. first run before any seed/snapshot
+       has been built in dev), there are no timestamps to look up. #}
+    {% if flat_schemas | length == 0 %}
+        {{ return(None) }}
+    {% endif %}
+
+    {% call statement("last_modified", fetch_result=True) %}
         {% for schema_group in flat_schemas %}
             select
                 rm.resource,

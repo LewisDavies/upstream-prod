@@ -487,3 +487,85 @@ models:
           - accepted_values:
               arguments:
                 values: ['snapshot_example']
+
+
+  - name: defer_prod_seed
+    columns:
+      # Source
+      - name: source_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('prod_database') }}"
+      - name: source_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('prod_seeds_schema') }}"
+      - name: source_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['seed__defer_prod']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_target') }}"
+      - name: this_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_database') }}"
+      - name: this_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_marts_schema') }}"
+      - name: this_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['defer_prod_seed']
+
+
+  - name: dev_newer_seed
+    columns:
+      # Source
+      - name: source_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_database') }}"
+      - name: source_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_seeds_schema') }}"
+      - name: source_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['seed__dev_newer']
+      # This
+      - name: this_target
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_target') }}"
+      - name: this_database
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_database') }}"
+      - name: this_schema
+        tests:
+          - accepted_values:
+              arguments:
+                values: "{{ var('dev_marts_schema') }}"
+      - name: this_model
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['dev_newer_seed']

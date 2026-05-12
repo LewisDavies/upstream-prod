@@ -28,6 +28,11 @@ snapshots:
     +strategy: timestamp
     +updated_at: updated_at
 
+seeds:
+  upstream_prod_integration_tests:
+    +static_analysis: off
+    +schema: seeds
+
 vars:
   # Package config
   upstream_prod_env_schemas: true
@@ -39,10 +44,12 @@ vars:
   prod_database: ["upproddb"]
   prod_stg_schema: ["stg"]
   prod_snapshots_schema: ["snapshots"]
+  prod_seeds_schema: ["seeds"]
   dev_target: ["dev"]
   dev_database: ["upproddb"]
   dev_marts_schema: ["dev"]
   dev_stg_schema: ["dev"]
+  dev_seeds_schema: ["dev"]
 
 flags:
   require_generic_test_arguments_property: true

@@ -44,6 +44,10 @@ do
         dbt run-operation create_test_db -t dev --args '{db: upproddb}'
         dbt run-operation create_test_db -t dev --args '{db: updevdb}'
 
+        echo "    Seeding test seeds..."
+        dbt seed -t prod -s seed__defer_prod seed__dev_newer
+        dbt seed -t dev -s seed__dev_newer
+
         echo "    Running staging models..."
         dbt snapshot -t prod
         dbt run -t prod -s stg__aliased stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch

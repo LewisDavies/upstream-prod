@@ -73,7 +73,7 @@
                     {% set all_parents = model.depends_on.nodes if (model is defined and model.depends_on is defined) else [parent_node["unique_id"]] %}
                     {% set parent_ids = [] %}
                     {% for p in all_parents %}
-                        {% if p.startswith("model.") %}
+                        {% if p.split(".")[0] in ("model", "seed", "snapshot") %}
                             {% do parent_ids.append(p) %}
                         {% endif %}
                     {% endfor %}

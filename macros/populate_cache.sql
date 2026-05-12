@@ -17,7 +17,7 @@
             {% set parent_ids = [] %}
             {% for resource in selected_resources %}
                 {% for parent in graph.nodes[resource].depends_on.nodes %}
-                    {% if parent.startswith("model.") and parent not in selected_resources %}
+                    {% if parent.split(".")[0] in ("model", "seed", "snapshot") and parent not in selected_resources %}
                         {% do parent_ids.append(parent) %}
                     {% endif %}
                 {% endfor %}

@@ -20,11 +20,23 @@ else
     platforms="sf dbx bq"
 fi
 
+# Report which dbt is on PATH so the user knows whether they're testing core or fusion
+dbt_version=$(dbt --version 2>&1)
+case "$dbt_version" in
+    *[Ff]usion*) dbt_flavor="dbt-fusion" ;;
+    *[Cc]ore*)   dbt_flavor="dbt-core" ;;
+    *)
+        echo "Error: could not determine dbt flavor from 'dbt --version':" >&2
+        echo "$dbt_version" >&2
+        exit 1
+        ;;
+esac
+
 for platform in $platforms
 do
     echo ""
     echo "========================================"
-    echo "  Platform: $(platform_name $platform)"
+    echo "  Platform: $(platform_name $platform) ($dbt_flavor)"
     echo "========================================"
 
     export UP_TARGET_PLATFORM=$platform

@@ -14,7 +14,7 @@ clean-targets:
 
 models:
   import_project:
-    +static_analysis: unsafe
+    +static_analysis: strict
     staging:
       +schema: stg
 

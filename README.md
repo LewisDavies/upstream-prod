@@ -8,11 +8,17 @@ In a typical project, prod and dev models are materialised in [separate environm
 
 `upstream-prod` solves this by intelligently redirecting `ref`s to prod outputs. It is highly adaptable and can be used whether your environments are in separate schemas, databases, or a combination of both. On most warehouses it can even compare dev and prod outputs and use the most recently-updated relation.
 
-### ⚠️ Breaking changes in version `0.9.0`
+### Known limitations
 
-If upgrading from an earlier version:
-- Your `ref` macro *must* be updated by copying [this example](#5-create-a-custom-ref-macro).
-- Projects using the deprecated `upstream_prod_database_replace` variable should follow the setup guide to use `upstream_prod_env_dbs` instead.
+**`microbatch` on Snowflake with dbt Fusion is supported but may be fragile.** Fusion's microbatch handling is still a work in progress. It doesn't apply batch filters to refs the way dbt-core does ([dbt-labs/dbt-fusion#1608](https://github.com/dbt-labs/dbt-fusion/issues/1608)), so `upstream-prod` reconstructs the filter manually from `model.batch` and the parent's `event_time`. This works on Snowflake Fusion today, but it leans on Fusion-internal state with no stability guarantees and could break in future Fusion releases.
+
+**Don't use `microbatch` on Databricks / BigQuery Fusion.** Builds crash inside the adapter's incremental materialization (`adapter.clean_sql(model['compiled_code'])` resolves to undefined during the per-batch render). This reproduces with a vanilla microbatch model — no `upstream-prod` involvement — so it's an upstream Fusion gap rather than something `upstream-prod` can patch around. Exclude microbatch from your Fusion runs:
+
+```bash
+dbt run --exclude config.incremental_strategy:microbatch
+```
+
+Microbatch with `upstream-prod` works fully on dbt-core for every supported adapter.
 
 ## Setup
 

@@ -101,9 +101,40 @@
             {{ upstream_prod.raise_ref_not_found_error(current_model, prod_rel_db, prod_rel_schema, prod_rel_name) }}
         {% endif %}
 
-        -- Carry over limit (--empty) and event_time_filter (microbatch/--sample) from the builtin ref
-        {% set return_rel = return_rel.replace(limit=parent_ref.limit, event_time_filter=parent_ref.event_time_filter) %}
-        {{ return(return_rel) }}
+        -- Core: replace() carries over limit (--empty) and event_time_filter (microbatch/--sample) from the builtin ref.
+        -- This method is not available on Fusion.
+        {% if return_rel.replace is defined %}
+            {% set return_rel = return_rel.replace(limit=parent_ref.limit, event_time_filter=parent_ref.event_time_filter) %}
+            {{ return(return_rel) }}
+        -- Fusion microbatch: model.batch is populated during materialization but Fusion does not
+        -- bake the batch filter onto parent_ref (the relevant code path in dbt-fusion's RefFunction
+        -- is wired up via with_microbatch_context, which has no callers). Reconstruct the filter
+        -- ourselves from model.batch and the parent model's event_time.
+        {% elif model is defined
+            and model.batch is defined
+            and model.batch.id
+            and parent_node["event_time"] is defined
+            and parent_node["event_time"] is not none
+        %}
+            {% set event_time = parent_node["event_time"] %}
+            {{ return(
+                "(select * from " ~ return_rel ~ " where cast(" ~
+                event_time ~ " as " ~ dbt.type_timestamp() ~ ") >= cast('" ~ model.batch.event_time_start ~ "' as " ~ dbt.type_timestamp() ~ ") and cast(" ~
+                event_time ~ " as " ~ dbt.type_timestamp() ~ ") < cast('" ~ model.batch.event_time_end ~ "' as " ~ dbt.type_timestamp() ~ "))"
+            ) }}
+        -- Fusion --sample / --empty: parent_ref's str form contains the active filter via
+        -- render_with_run_filter. Swap the dev path for the prod path inside that rendered string.
+        -- When no filter is active parent_str == parent_ref.render(), so we return the relation
+        -- to keep macros like dbt_utils.union_relations() working.
+        {% else %}
+            {% set parent_rendered = parent_ref.render() %}
+            {% set parent_str = parent_ref | string %}
+            {% if parent_str == parent_rendered %}
+                {{ return(return_rel) }}
+            {% else %}
+                {{ return(parent_str.replace(parent_rendered, return_rel.render())) }}
+            {% endif %}
+        {% endif %}
 
     {% endif %}
 {% endmacro %}

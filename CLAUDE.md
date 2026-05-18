@@ -73,6 +73,14 @@ Before running `make test` against your warehouse:
 
 If you only want to test a single adapter, use the platform-specific target: `make test-snowflake`, `make test-databricks`, `make test-bigquery`.
 
+## Bumping the package version
+
+The `version` in `dbt_project.yml` should always be exactly **one ahead** of the latest tag on `origin`. Before changing it:
+
+1. Run `git tag --sort=-v:refname | head -1` to see the latest released version.
+2. The next version (current + a single bump on the appropriate segment) is the only correct value for `dbt_project.yml`. Don't bump again just because work has happened since the previous bump — if the in-progress version still matches `latest_tag + 1`, leave it alone.
+3. Never bump because `dbt_project.yml`'s version "feels stale". A version that hasn't been released yet is still the right value.
+
 ## Environment
 
 Copy `.env.example` to `.env` and fill in credentials before running tests. Python deps managed with `uv` (`make setup`).

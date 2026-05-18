@@ -432,15 +432,36 @@ models:
 
 
   - name: microbatch
+    tests:
+      - row_count_equals:
+          arguments:
+            expected: 2
     columns:
       - name: activity_date
         tests:
           - not_null
           - dbt_utils.not_constant
+          - accepted_values:
+              arguments:
+                values: ['2025-01-01', '2025-01-02']
       - name: updated_at
         tests:
           - not_null
           - dbt_utils.not_constant
+
+
+  - name: sample_flag
+    tests:
+      - row_count_equals:
+          arguments:
+            expected: 1
+    columns:
+      - name: activity_date
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= {{ dbt.dateadd('hour', -36, dbt.current_timestamp()) }} and activity_date <= {{ dbt.dateadd('hour', -12, dbt.current_timestamp()) }}"
 
 
   - name: snapshot_example

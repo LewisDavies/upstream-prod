@@ -10,7 +10,7 @@
 
 {{
     config(
-        materialized = "incremental",
+        materialized="incremental",
         incremental_strategy="microbatch",
         event_time="activity_date",
         batch_size="day",
@@ -18,8 +18,6 @@
         partition_by=partition
     )
 }}
-
-  
 
 select
     activity_date,

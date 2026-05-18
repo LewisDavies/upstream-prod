@@ -62,15 +62,27 @@ do
 
         echo "    Running staging models..."
         dbt snapshot -t prod
-        dbt run -t prod -s stg__aliased stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch
+        dbt run -t prod -s stg__aliased stg__defer_prod stg__defer_vers stg__dev_newer stg__cross_project stg__microbatch stg__sample_flag
         dbt run -t dev -s stg__dev_fallback stg__dev_newer
+
+        # microbatch builds crash inside dbt-databricks / dbt-bigquery Fusion
+        # materializations (see README "Known limitations"). Reproduces without
+        # upstream-prod, so we exclude it from all Fusion runs.
+        # sample_flag is built separately below since it requires --sample.
+        excludes="sample_flag"
+        if [ "$dbt_flavor" = "dbt-fusion" ]; then
+            excludes="$excludes config.incremental_strategy:microbatch"
+        fi
 
         echo "    Building downstream models..."
         # event-time flags only affect the microbatch model
-        dbt build -t dev -s models/marts --event-time-start "2025-01-01" --event-time-end "2025-01-03"
+        dbt build -t dev -s models/marts --exclude "$excludes" --event-time-start "2025-01-01" --event-time-end "2025-01-03"
 
         echo "    Checking --empty flag..."
         dbt build -t dev -s defer_prod --empty
+
+        echo "    Checking --sample flag..."
+        dbt build -t dev -s sample_flag --sample='3 days'
 
         echo "    Checking --inline flag..."
         dbt show -t dev --inline 'select * from {{ ref("stg__dev_newer") }}' --limit 5 > /dev/null

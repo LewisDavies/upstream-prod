@@ -12,15 +12,20 @@
         {# Raise error if at least one required variable is not set #}
         {{ upstream_prod.check_reqd_vars(var("upstream_prod_database", None), var("upstream_prod_schema", None), var("upstream_prod_env_schemas", False), env_dbs=var("upstream_prod_env_dbs", False)) }}
 
-        {# Default: derive parents from selected_resources (on-run-start path) #}
+        {# Default: derive parents from selected_resources (on-run-start path).
+           Guard with `resource in graph.nodes`: dbt-fusion excludes analyses
+           from graph.nodes (dbt-core includes them), and strict Jinja errors
+           on the missing-key lookup. #}
         {% if parent_ids is none %}
             {% set parent_ids = [] %}
             {% for resource in selected_resources %}
-                {% for parent in graph.nodes[resource].depends_on.nodes %}
-                    {% if parent.split(".")[0] in ("model", "seed", "snapshot") and parent not in selected_resources %}
-                        {% do parent_ids.append(parent) %}
-                    {% endif %}
-                {% endfor %}
+                {% if resource in graph.nodes %}
+                    {% for parent in graph.nodes[resource].depends_on.nodes %}
+                        {% if parent.split(".")[0] in ("model", "seed", "snapshot") and parent not in selected_resources %}
+                            {% do parent_ids.append(parent) %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         {% endif %}
 

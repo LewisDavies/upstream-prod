@@ -12,3 +12,4 @@ logs/
 integration_tests/dbt_project.yml
 # Keeps getting changed when switching between Core & Fusion
 package-lock.yml
+.strata

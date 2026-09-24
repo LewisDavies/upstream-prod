@@ -24,9 +24,6 @@ snapshots:
   upstream_prod_integration_tests:
     +static_analysis: off
     +schema: snapshots
-    +unique_key: id
-    +strategy: timestamp
-    +updated_at: updated_at
 
 seeds:
   upstream_prod_integration_tests:

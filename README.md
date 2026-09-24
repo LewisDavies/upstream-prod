@@ -34,7 +34,7 @@ Add `upstream_prod` to `packages.yml`, then run `dbt deps`:
 # packages.yml
 packages:
   - package: LewisDavies/upstream_prod
-    version: 0.10.3
+    version: 0.10.6
 ```
 
 ### 2. Does your project have a custom schema macro?

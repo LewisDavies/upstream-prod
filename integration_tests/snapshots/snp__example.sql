@@ -1,5 +1,13 @@
 {% snapshot snp__example %}
 
+{{
+    config(
+        unique_key="id",
+        strategy="timestamp",
+        updated_at="updated_at",
+    )
+}}
+
 select
     '{{ target.name }}' as source_target,
     '{{ this.database }}' as source_database,

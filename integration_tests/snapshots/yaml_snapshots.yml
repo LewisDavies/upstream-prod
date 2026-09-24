@@ -1,0 +1,7 @@
+snapshots:
+  - name: snp__yaml_example
+    relation: ref("seed__defer_prod")
+    config:
+      strategy: check
+      unique_key: id
+      check_cols: all

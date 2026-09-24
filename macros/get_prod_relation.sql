@@ -42,15 +42,19 @@
     {% endif %}
 
     /***************
-    prod_rel_name identifies the correct prod relation. There are two cases:
+    prod_rel_name identifies the correct prod relation. There are three cases:
     1. A persistent `config(alias=...)` on the model — the alias is the real name in both
        environments, so we use it directly.
-    2. Otherwise — the alias may be a dev-only override set by a custom `generate_alias_name`
+    2. A snapshot without a configured alias — use the node name because YAML-defined
+       snapshots have a generated path prefixed by the properties filename.
+    3. Otherwise — the alias may be a dev-only override set by a custom `generate_alias_name`
        macro, so we fall back to the filename (+ version suffix when needed).
     ***************/
     {% set re = modules.re %}
     {% if parent_node.config.alias is not none %}
         {% set prod_rel_name = parent_node.config.alias %}
+    {% elif parent_node.resource_type == "snapshot" %}
+        {% set prod_rel_name = parent_node.name %}
     {% else %}
         {% set prod_rel_name = re.search("\w+(?=\.)", parent_node.path).group() %}
     {% endif %}

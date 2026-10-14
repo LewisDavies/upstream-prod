@@ -35,8 +35,16 @@
 
     -- Set prod database name
     {% if env_dbs is true %}
-        -- Database generated with custom macro
-        {% set parent_database = generate_database_name(prod_database, parent_node, True) | trim %}
+        {% set custom_database_name = parent_node.config.database %}
+        -- Database generated with custom macro.
+        -- If no custom database is set on the node, fall back to prod_database
+        -- (upstream_prod_database var) so nodes in the default prod DB are found,
+        -- mirroring the schema fallback pattern above.
+        {% if custom_database_name is none and prod_database is not none %}
+            {% set parent_database = prod_database %}
+        {% else %}
+            {% set parent_database = generate_database_name(custom_database_name, parent_node, True) | trim %}
+        {% endif %}
     {% else %}
         {% set parent_database = prod_database or dev_database %}
     {% endif %}
